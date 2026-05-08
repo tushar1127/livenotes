@@ -1,0 +1,666 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveNotes</title>
+<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0e10;--surface:#17171a;--surface2:#1f1f24;
+  --border:rgba(255,255,255,0.08);--borderh:rgba(255,255,255,0.16);
+  --text:#f0ede8;--muted:#7a7a8a;
+  --accent:#c8a97e;--ag:rgba(200,169,126,0.15);--as:rgba(200,169,126,0.08);
+  --danger:#e05252;--green:#5ecc8b;
+  --t1:#3d2e52;--t1t:#c9a8f0;--t2:#1e3a4a;--t2t:#7fc9e8;--t3:#2d3a1e;--t3t:#9ecc6e;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+
+/* ── AUTH ── */
+#auth-screen{
+  position:fixed;inset:0;z-index:100;
+  background:linear-gradient(135deg,#0e0e10 0%,#1a1020 50%,#0e1a0e 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.auth-card{width:100%;max-width:396px;padding:0 20px;animation:fadeUp .45s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.auth-logo{
+  font-family:'Grand Hotel',cursive;font-size:56px;text-align:center;
+  background:linear-gradient(135deg,#c8a97e,#f0ede8,#c8a97e);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.auth-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:22px}
+.auth-box{
+  background:rgba(23,23,26,.92);border:1px solid var(--border);
+  border-radius:12px;padding:28px 24px;margin-bottom:10px;
+}
+.auth-field{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:14px;outline:none;transition:border-color .2s;margin-bottom:10px;display:block;
+}
+.auth-field:focus{border-color:var(--accent)}
+.auth-field::placeholder{color:var(--muted);font-size:13px}
+.pw-wrap{position:relative;margin-bottom:10px}
+.pw-wrap .auth-field{margin-bottom:0;padding-right:56px}
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;
+}
+.pw-toggle:hover{color:var(--accent)}
+.auth-btn{
+  width:100%;padding:13px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  background:linear-gradient(135deg,#c8a97e,#b8905e);color:#fff;
+  transition:all .2s;margin-top:4px;letter-spacing:.3px;
+}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,169,126,.3)}
+.auth-btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);box-shadow:none}
+.auth-btn.ghost:hover{border-color:var(--borderh)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0}
+.auth-divider span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-switch{
+  background:rgba(23,23,26,.92);border:1px solid var(--border);
+  border-radius:12px;padding:16px;text-align:center;font-size:14px;color:var(--muted);
+}
+.auth-switch a{color:var(--accent);font-weight:600;cursor:pointer}
+.auth-switch a:hover{text-decoration:underline}
+.auth-err{
+  background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);
+  border-radius:8px;padding:9px 13px;font-size:13px;color:#f08080;
+  margin-bottom:12px;display:none;
+}
+
+/* ── APP ── */
+#app{display:none;height:100vh;flex-direction:column}
+#app.visible{display:flex}
+
+/* topnav */
+#topnav{
+  height:50px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0;
+}
+.nav-logo{
+  font-family:'Grand Hotel',cursive;font-size:26px;
+  background:linear-gradient(135deg,#c8a97e,#f0ede8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.live-dot{
+  width:7px;height:7px;background:var(--accent);border-radius:50%;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
+.nspc{flex:1}
+.nav-user{
+  display:flex;align-items:center;gap:8px;padding:4px 10px;
+  border-radius:8px;border:1px solid transparent;cursor:default;
+}
+.nav-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#c8a97e,#b8905e);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:#fff;flex-shrink:0;
+}
+.nav-uname{font-size:13px;font-weight:500}
+.nav-logout{
+  padding:5px 13px;border-radius:7px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:12px;font-weight:500;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;
+}
+.nav-logout:hover{color:var(--danger);border-color:rgba(224,82,82,.4);background:rgba(224,82,82,.08)}
+
+/* body split */
+#bd{display:flex;flex:1;overflow:hidden}
+
+/* sidebar */
+#sidebar{
+  width:268px;min-width:268px;background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  transition:width .28s ease,min-width .28s ease,opacity .25s;overflow:hidden;
+}
+#app.maximized #sidebar{width:0!important;min-width:0!important;opacity:0}
+.sbh{padding:14px 14px 10px;border-bottom:1px solid var(--border)}
+#search-box{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:13px;padding:8px 12px 8px 32px;outline:none;transition:border-color .2s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' stroke='%237a7a8a' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:10px center;
+}
+#search-box:focus{border-color:var(--accent)}
+#search-box::placeholder{color:var(--muted)}
+.new-btn{
+  display:flex;align-items:center;gap:7px;width:100%;margin-top:9px;
+  padding:8px 13px;background:var(--as);border:1px solid rgba(200,169,126,.2);
+  border-radius:8px;color:var(--accent);font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;
+}
+.new-btn:hover{background:var(--ag);border-color:rgba(200,169,126,.4);transform:translateY(-1px)}
+.sb-lbl{padding:11px 14px 4px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+#notes-list{flex:1;overflow-y:auto;padding:3px 7px 8px}
+#notes-list::-webkit-scrollbar{width:3px}
+#notes-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.ni{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:2px;position:relative;border:1px solid transparent;transition:background .15s}
+.ni:hover{background:var(--surface2);border-color:var(--border)}
+.ni.active{background:var(--as);border-color:rgba(200,169,126,.2)}
+.ni-t{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.ni.active .ni-t{color:var(--accent)}
+.ni-p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ni-m{display:flex;align-items:center;gap:5px;margin-top:5px}
+.ntag{font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500}
+.tp{background:var(--t1);color:var(--t1t)}.tb{background:var(--t2);color:var(--t2t)}.tg{background:var(--t3);color:var(--t3t)}
+.ni-ts{font-size:10px;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace}
+.delbtn{
+  position:absolute;top:50%;right:8px;transform:translateY(-50%);
+  width:21px;height:21px;background:rgba(224,82,82,.1);border:none;
+  border-radius:4px;color:var(--danger);cursor:pointer;font-size:14px;
+  display:none;align-items:center;justify-content:center;transition:background .15s;
+}
+.ni:hover .delbtn{display:flex}
+.delbtn:hover{background:rgba(224,82,82,.25)}
+
+/* main */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* toolbar */
+#toolbar{
+  padding:8px 18px;border-bottom:1px solid var(--border);
+  display:none;align-items:center;gap:5px;background:var(--surface);flex-shrink:0;flex-wrap:wrap;
+}
+.tb-btn{
+  height:30px;min-width:30px;padding:0 8px;background:transparent;
+  border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;transition:all .15s;font-family:'DM Mono',monospace;gap:3px;
+}
+.tb-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--borderh)}
+.tb-btn.on{background:var(--as);color:var(--accent);border-color:rgba(200,169,126,.35)}
+.tsep{width:1px;height:20px;background:var(--border);margin:0 2px;flex-shrink:0}
+.tpill{font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid transparent;transition:all .15s;font-weight:500}
+.tpill:hover{opacity:.8}
+.tpill.sel{border-color:currentColor}
+.sav-ind{font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px;margin-left:4px;opacity:0;transition:opacity .3s;font-family:'DM Mono',monospace}
+.sav-ind.on{opacity:1}
+.sav-dot{width:6px;height:6px;background:var(--green);border-radius:50%}
+.win-grp{margin-left:auto;display:flex;align-items:center;gap:5px}
+.win-btn{
+  width:28px;height:28px;background:transparent;border:1px solid var(--border);
+  border-radius:6px;color:var(--muted);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.win-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--borderh)}
+
+/* editor */
+#editor-wrap{flex:1;display:none;flex-direction:column;overflow:hidden}
+#ea{flex:1;overflow-y:auto;padding:34px 52px}
+#ea::-webkit-scrollbar{width:4px}
+#ea::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#note-title{
+  font-family:'Grand Hotel',cursive;font-size:42px;color:var(--text);
+  background:transparent;border:none;outline:none;width:100%;
+  margin-bottom:6px;caret-color:var(--accent);
+}
+#note-title::placeholder{color:rgba(240,237,232,.12)}
+.e-meta{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:18px}
+.e-date{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+#note-body{
+  flex:1;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;
+  line-height:1.88;color:var(--text);outline:none;min-height:380px;
+  caret-color:var(--accent);word-break:break-word;
+}
+#note-body:empty::before{content:attr(data-ph);color:rgba(240,237,232,.12);pointer-events:none;display:block}
+#note-body b,#note-body strong{font-weight:700}
+#note-body i,#note-body em{font-style:italic}
+#note-body u{text-decoration:underline}
+#note-body ul{padding-left:22px;margin:4px 0}
+#note-body ol{padding-left:22px;margin:4px 0}
+#note-body li{margin:2px 0}
+#note-body pre{background:rgba(255,255,255,.06);padding:12px;border-radius:8px;font-family:'DM Mono',monospace;font-size:13px;margin:8px 0;border:1px solid rgba(255,255,255,.08);white-space:pre-wrap}
+#note-body code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:13px}
+#note-body hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:14px 0}
+
+/* status bar */
+#status-bar{padding:6px 18px;border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:18px;flex-shrink:0}
+.stat{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
+.stat b{color:var(--text);font-weight:500}
+
+/* empty state */
+#empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:.3}
+.es-ico{font-size:54px}
+.es-t{font-family:'Grand Hotel',cursive;font-size:26px;color:var(--muted)}
+.es-s{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <!-- LOGIN -->
+  <div class="auth-card" id="lpanel">
+    <div class="auth-logo">LiveNotes</div>
+    <p class="auth-sub">Sign in to keep your notes</p>
+    <div class="auth-box">
+      <div class="auth-err" id="lerr"></div>
+      <input class="auth-field" id="lu" type="text" placeholder="Username or email" autocomplete="username">
+      <div class="pw-wrap">
+        <input class="auth-field" id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="pw-toggle" onclick="tpw('lp',this)">Show</button>
+      </div>
+      <button class="auth-btn" onclick="doLogin()" style="margin-top:8px">Log In</button>
+      <div class="auth-divider"><span>OR</span></div>
+      <button class="auth-btn ghost" onclick="doGuest()">Continue as Guest</button>
+    </div>
+    <div class="auth-switch">Don't have an account? <a onclick="sp('s')">Sign up</a></div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div class="auth-card" id="spanel" style="display:none">
+    <div class="auth-logo">LiveNotes</div>
+    <p class="auth-sub">Create your free account</p>
+    <div class="auth-box">
+      <div class="auth-err" id="serr"></div>
+      <input class="auth-field" id="sn" type="text" placeholder="Full name">
+      <input class="auth-field" id="se" type="email" placeholder="Email address">
+      <input class="auth-field" id="su" type="text" placeholder="Username">
+      <div class="pw-wrap">
+        <input class="auth-field" id="sp2" type="password" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter')doSignup()">
+        <button class="pw-toggle" onclick="tpw('sp2',this)">Show</button>
+      </div>
+      <button class="auth-btn" onclick="doSignup()" style="margin-top:8px">Sign Up</button>
+    </div>
+    <div class="auth-switch">Already have an account? <a onclick="sp('l')">Log in</a></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div id="topnav">
+    <div class="nav-logo">LiveNotes</div>
+    <div class="live-dot" style="margin-left:3px"></div>
+    <div class="nspc"></div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="nav-av">?</div>
+      <span class="nav-uname" id="nav-nm">Guest</span>
+    </div>
+    <button class="nav-logout" onclick="doLogout()">Log out</button>
+  </div>
+
+  <div id="bd">
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+      <div class="sbh">
+        <input type="text" id="search-box" placeholder="Search notes…" oninput="renderList()">
+        <button class="new-btn" onclick="createNote()"><span style="font-size:17px;line-height:1">＋</span>New Note</button>
+      </div>
+      <div class="sb-lbl">All Notes</div>
+      <div id="notes-list"></div>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main">
+      <div id="toolbar">
+        <!-- Undo/Redo -->
+        <button class="tb-btn" id="btn-undo" title="Undo (Ctrl+Z)" onclick="doUndo()" style="opacity:.35;font-size:15px">↩</button>
+        <button class="tb-btn" id="btn-redo" title="Redo (Ctrl+Y / Ctrl+Shift+Z)" onclick="doRedo()" style="opacity:.35;font-size:15px">↪</button>
+        <div class="tsep"></div>
+
+        <!-- Bold Italic Underline — these work on contenteditable -->
+        <button class="tb-btn" id="fmt-bold"      title="Bold (Ctrl+B)"      onclick="rf('bold')"     ><b>B</b></button>
+        <button class="tb-btn" id="fmt-italic"    title="Italic (Ctrl+I)"    onclick="rf('italic')"   ><i style="font-style:italic">I</i></button>
+        <button class="tb-btn" id="fmt-underline" title="Underline (Ctrl+U)" onclick="rf('underline')"><u>U</u></button>
+        <div class="tsep"></div>
+
+        <!-- Inserts -->
+        <button class="tb-btn" title="Bullet list (ul)"   onclick="ri('ul')">•≡</button>
+        <button class="tb-btn" title="Numbered list (ol)" onclick="ri('ol')">1≡</button>
+        <button class="tb-btn" title="Horizontal rule"    onclick="ri('hr')">──</button>
+        <button class="tb-btn" title="Code block"         onclick="ri('code')" style="font-size:11px">&lt;/&gt;</button>
+        <div class="tsep"></div>
+
+        <!-- Tags -->
+        <span style="font-size:11px;color:var(--muted);flex-shrink:0">Tag:</span>
+        <span class="tpill tp" id="tag-purple" onclick="setTag('purple')">Ideas</span>
+        <span class="tpill tb" id="tag-blue"   onclick="setTag('blue')">Work</span>
+        <span class="tpill tg" id="tag-green"  onclick="setTag('green')">Personal</span>
+
+        <div class="sav-ind" id="sav-ind"><div class="sav-dot"></div>Saved</div>
+
+        <!-- Window controls -->
+        <div class="win-grp">
+          <button class="win-btn" id="btn-max" title="Maximize editor (hide sidebar)" onclick="toggleMax()">⛶</button>
+          <button class="win-btn" id="btn-min" title="Restore sidebar"                onclick="toggleMin()" style="display:none">⊡</button>
+        </div>
+      </div>
+
+      <div id="empty-state">
+        <div class="es-ico">📝</div>
+        <div class="es-t">Nothing open</div>
+        <div class="es-s">Create a note or pick one from the sidebar</div>
+      </div>
+
+      <div id="editor-wrap">
+        <div id="ea">
+          <input type="text" id="note-title" placeholder="Untitled note…" oninput="onTitleInput()">
+          <div class="e-meta">
+            <span class="e-date" id="e-date"></span>
+            <span id="apill" class="ntag" style="display:none"></span>
+          </div>
+          <div id="note-body" contenteditable="true" spellcheck="true"
+               data-ph="Start writing… your words are saved instantly."
+               oninput="onBodyInput()"
+               onkeydown="handleKey(event)"
+               onmouseup="updFmt()"
+               onkeyup="updFmt()"></div>
+        </div>
+        <div id="status-bar">
+          <div class="stat">Words <b id="sw">0</b></div>
+          <div class="stat">Chars <b id="sc">0</b></div>
+          <div class="stat">Lines <b id="sl">1</b></div>
+          <div class="stat" style="margin-left:auto">Read <b id="sr">&lt;1 min</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════ AUTH ══════════════════════ */
+let USERS = JSON.parse(localStorage.getItem('ln_users') || '[]');
+let CU = null; // current user
+
+function sp(p){ document.getElementById('lpanel').style.display=p==='l'?'':'none'; document.getElementById('spanel').style.display=p==='s'?'':'none'; }
+function tpw(id,btn){ const f=document.getElementById(id); f.type=f.type==='password'?'text':'password'; btn.textContent=f.type==='password'?'Show':'Hide'; }
+function showErr(id,m){ const e=document.getElementById(id); e.textContent=m; e.style.display='block'; setTimeout(()=>e.style.display='none',3200); }
+
+function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value;
+  if(!u||!p){showErr('lerr','Please fill in all fields.');return;}
+  const found=USERS.find(x=>(x.username===u||x.email===u)&&x.password===p);
+  if(!found){showErr('lerr','Wrong username or password.');return;}
+  loginUser(found);
+}
+
+function doSignup(){
+  const name=document.getElementById('sn').value.trim();
+  const email=document.getElementById('se').value.trim();
+  const user=document.getElementById('su').value.trim();
+  const pass=document.getElementById('sp2').value;
+  if(!name||!email||!user||!pass){showErr('serr','All fields are required.');return;}
+  if(pass.length<6){showErr('serr','Password must be at least 6 characters.');return;}
+  if(!/\S+@\S+\.\S+/.test(email)){showErr('serr','Enter a valid email address.');return;}
+  if(USERS.find(x=>x.username===user)){showErr('serr','Username already taken.');return;}
+  if(USERS.find(x=>x.email===email)){showErr('serr','Email already registered.');return;}
+  const nu={id:'u_'+Date.now(),username:user,email,name,password:pass};
+  USERS.push(nu); localStorage.setItem('ln_users',JSON.stringify(USERS));
+  loginUser(nu);
+}
+
+function doGuest(){ loginUser({id:'guest_'+Date.now(),username:'Guest',name:'Guest',email:''}); }
+
+function loginUser(u){
+  CU=u; localStorage.setItem('ln_sess',JSON.stringify(u));
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('nav-nm').textContent=u.name||u.username;
+  document.getElementById('nav-av').textContent=(u.name||u.username)[0].toUpperCase();
+  initNotes();
+}
+
+function doLogout(){
+  CU=null; localStorage.removeItem('ln_sess');
+  activeId=null; notes=[];
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('lu').value=''; document.getElementById('lp').value='';
+  document.getElementById('app').classList.remove('maximized');
+  sp('l');
+}
+
+// auto-login
+(function(){ const s=localStorage.getItem('ln_sess'); if(s){try{loginUser(JSON.parse(s));}catch(e){}} })();
+
+/* ══════════════════════ NOTES DATA ══════════════════════ */
+let notes=[], activeId=null, saveTimer=null;
+function stKey(){ return 'ln_notes_'+(CU?CU.id:'g'); }
+
+function initNotes(){
+  notes=JSON.parse(localStorage.getItem(stKey())||'[]');
+  if(!notes.length){
+    const d={id:Date.now(),title:'Welcome to LiveNotes ✦',
+      body:'<p>Everything you write is <b>saved instantly</b> to your browser.</p><p><br></p><p><b>What\'s new in this version:</b></p><ul><li>Instagram-style login &amp; sign up</li><li>Working <b>Bold</b>, <i>Italic</i>, <u>Underline</u> buttons</li><li>Ctrl+Z / Ctrl+Y Undo &amp; Redo</li><li>Maximize ⛶ and Minimize ⊡ editor</li><li>Tags: Ideas, Work, Personal</li></ul><p><br></p><p>Create a new note with the <b>+ New Note</b> button on the left!</p>',
+      tag:'purple',created:Date.now(),modified:Date.now()};
+    notes.push(d); saveToDisk();
+  }
+  renderList(); openNote(notes[0].id);
+}
+
+function saveToDisk(){
+  localStorage.setItem(stKey(),JSON.stringify(notes));
+  const ind=document.getElementById('sav-ind');
+  ind.classList.add('on');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>ind.classList.remove('on'),1800);
+}
+
+/* ══════════════════════ UNDO/REDO ══════════════════════ */
+const UH={};
+const MH=200;
+function gh(id){ if(!UH[id])UH[id]={s:[],c:-1}; return UH[id]; }
+
+function pushH(id,html){
+  const h=gh(id);
+  h.s=h.s.slice(0,h.c+1);
+  if(h.s[h.s.length-1]===html)return;
+  h.s.push(html);
+  if(h.s.length>MH)h.s.shift();
+  h.c=h.s.length-1;
+  updUB();
+}
+
+function seedH(id,html){ const h=gh(id); if(!h.s.length){h.s.push(html);h.c=0;} updUB(); }
+
+function applyH(html){
+  const el=document.getElementById('note-body');
+  el.innerHTML=html;
+  const note=notes.find(n=>n.id===activeId);
+  if(note){note.body=html;note.modified=Date.now();updStats();saveToDisk();renderList(true);}
+  // move caret to end
+  const r=document.createRange(),s=window.getSelection();
+  r.selectNodeContents(el);r.collapse(false);s.removeAllRanges();s.addRange(r);
+}
+
+function doUndo(){ const h=gh(activeId);if(h.c<=0)return;h.c--;applyH(h.s[h.c]);updUB(); }
+function doRedo(){ const h=gh(activeId);if(h.c>=h.s.length-1)return;h.c++;applyH(h.s[h.c]);updUB(); }
+
+function updUB(){
+  const h=activeId?gh(activeId):null;
+  const cu=h&&h.c>0, cr=h&&h.c<h.s.length-1;
+  const u=document.getElementById('btn-undo'),r=document.getElementById('btn-redo');
+  if(u)u.style.opacity=cu?'1':'0.35';
+  if(r)r.style.opacity=cr?'1':'0.35';
+}
+
+let ht=null;
+function schedH(){ clearTimeout(ht); const el=document.getElementById('note-body'); const html=el.innerHTML; ht=setTimeout(()=>pushH(activeId,html),500); }
+
+/* ══════════════════════ RICH TEXT ══════════════════════ */
+function rf(cmd){
+  document.getElementById('note-body').focus();
+  document.execCommand(cmd,false,null);
+  updFmt(); onBodyInput();
+}
+
+function updFmt(){
+  ['bold','italic','underline'].forEach(c=>{
+    const b=document.getElementById('fmt-'+c);
+    if(b)b.classList.toggle('on',document.queryCommandState(c));
+  });
+}
+
+function ri(type){
+  const el=document.getElementById('note-body'); el.focus();
+  if(type==='ul') document.execCommand('insertUnorderedList',false,null);
+  else if(type==='ol') document.execCommand('insertOrderedList',false,null);
+  else if(type==='hr') document.execCommand('insertHTML',false,'<hr>');
+  else if(type==='code'){
+    const sel=window.getSelection().toString();
+    if(sel) document.execCommand('insertHTML',false,`<code>${sel}</code>`);
+    else    document.execCommand('insertHTML',false,'<pre>// code here</pre>');
+  }
+  onBodyInput();
+}
+
+function handleKey(e){
+  const ctrl=e.ctrlKey||e.metaKey;
+  if(!ctrl)return;
+  if(e.key==='b'){e.preventDefault();rf('bold');}
+  else if(e.key==='i'){e.preventDefault();rf('italic');}
+  else if(e.key==='u'){e.preventDefault();rf('underline');}
+  else if(e.key==='z'){e.preventDefault();e.shiftKey?doRedo():doUndo();}
+  else if(e.key==='y'){e.preventDefault();doRedo();}
+}
+
+// global shortcuts
+document.addEventListener('keydown',e=>{
+  const ctrl=e.ctrlKey||e.metaKey;
+  if(!ctrl)return;
+  const body=document.getElementById('note-body');
+  if(document.activeElement!==body)return;
+  if(e.key==='z'){e.preventDefault();e.shiftKey?doRedo():doUndo();}
+  else if(e.key==='y'){e.preventDefault();doRedo();}
+});
+
+/* ══════════════════════ NOTE CRUD ══════════════════════ */
+function createNote(){
+  const now=Date.now();
+  const n={id:now,title:'',body:'',tag:null,created:now,modified:now};
+  notes.unshift(n);saveToDisk();renderList();openNote(n.id);
+  setTimeout(()=>document.getElementById('note-title').focus(),60);
+}
+
+function deleteNote(id,e){
+  e.stopPropagation();
+  notes=notes.filter(n=>n.id!==id);delete UH[id];saveToDisk();
+  if(activeId===id){activeId=null;showEmpty();}
+  renderList();
+}
+
+function openNote(id){
+  const note=notes.find(n=>n.id===id);if(!note)return;
+  activeId=id;
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('toolbar').style.display='flex';
+  document.getElementById('editor-wrap').style.display='flex';
+  document.getElementById('note-title').value=note.title;
+  const body=document.getElementById('note-body');
+  body.innerHTML=note.body||'';
+  seedH(id,note.body||'');
+  const d=new Date(note.modified);
+  document.getElementById('e-date').textContent=
+    d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+
+    ' · '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  updPill(note.tag);updStats();hlActive(id);updUB();updFmt();
+  document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('sel'));
+  if(note.tag)document.getElementById('tag-'+note.tag)?.classList.add('sel');
+}
+
+function showEmpty(){
+  document.getElementById('empty-state').style.display='flex';
+  document.getElementById('toolbar').style.display='none';
+  document.getElementById('editor-wrap').style.display='none';
+  updUB();
+}
+
+function onTitleInput(){
+  const note=notes.find(n=>n.id===activeId);if(!note)return;
+  note.title=document.getElementById('note-title').value;
+  note.modified=Date.now();saveToDisk();renderList(true);
+}
+
+function onBodyInput(){
+  const el=document.getElementById('note-body');
+  const note=notes.find(n=>n.id===activeId);if(!note)return;
+  note.body=el.innerHTML;note.modified=Date.now();
+  updStats();saveToDisk();renderList(true);schedH();
+}
+
+function updStats(){
+  const el=document.getElementById('note-body');
+  const txt=el.innerText||'';
+  const w=txt.trim()?txt.trim().split(/\s+/).length:0;
+  const rm=Math.ceil(w/200);
+  document.getElementById('sw').textContent=w;
+  document.getElementById('sc').textContent=txt.length;
+  document.getElementById('sl').textContent=txt?txt.split('\n').length:1;
+  document.getElementById('sr').textContent=rm<1?'<1 min':rm+' min';
+}
+
+function setTag(tag){
+  const note=notes.find(n=>n.id===activeId);if(!note)return;
+  note.tag=note.tag===tag?null:tag;note.modified=Date.now();saveToDisk();
+  updPill(note.tag);
+  document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('sel'));
+  if(note.tag)document.getElementById('tag-'+note.tag)?.classList.add('sel');
+  renderList(true);
+}
+
+function updPill(tag){
+  const el=document.getElementById('apill');
+  if(!tag){el.style.display='none';return;}
+  const L={purple:'Ideas',blue:'Work',green:'Personal'};
+  const C={purple:'tp',blue:'tb',green:'tg'};
+  el.style.display='inline-block';el.className='ntag '+(C[tag]||'');el.textContent=L[tag]||tag;
+}
+
+function hlActive(id){
+  document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',+el.dataset.id===id));
+}
+
+function renderList(keep=false){
+  const q=(document.getElementById('search-box')?.value||'').toLowerCase();
+  const list=document.getElementById('notes-list');
+  const st=list.scrollTop;
+  const fi=notes.filter(n=>!q||(n.title||'').toLowerCase().includes(q)||strip(n.body||'').toLowerCase().includes(q));
+  list.innerHTML='';
+  if(!fi.length){list.innerHTML='<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">No notes found</div>';return;}
+  const L={purple:'Ideas',blue:'Work',green:'Personal'},C={purple:'tp',blue:'tb',green:'tg'};
+  fi.forEach(note=>{
+    const div=document.createElement('div');
+    div.className='ni'+(note.id===activeId?' active':'');
+    div.dataset.id=note.id;div.onclick=()=>openNote(note.id);
+    const d=new Date(note.modified);
+    const ts=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const prev=strip(note.body||'').replace(/\n/g,' ').substring(0,54)||'No content…';
+    const th=note.tag?`<span class="ntag ${C[note.tag]||''}">${L[note.tag]||note.tag}</span>`:'';
+    div.innerHTML=`<div class="ni-t">${esc(note.title||'Untitled')}</div>
+      <div class="ni-p">${esc(prev)}</div>
+      <div class="ni-m">${th}<span class="ni-ts">${ts}</span></div>
+      <button class="delbtn" onclick="deleteNote(${note.id},event)">×</button>`;
+    list.appendChild(div);
+  });
+  if(keep)list.scrollTop=st;
+}
+
+function strip(h){return h.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ══════════════════════ MAXIMIZE / MINIMIZE ══════════════════════ */
+function toggleMax(){
+  document.getElementById('app').classList.add('maximized');
+  document.getElementById('btn-max').style.display='none';
+  document.getElementById('btn-min').style.display='flex';
+}
+function toggleMin(){
+  document.getElementById('app').classList.remove('maximized');
+  document.getElementById('btn-max').style.display='flex';
+  document.getElementById('btn-min').style.display='none';
+}
+</script>
+</body>
+</html>
