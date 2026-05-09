@@ -582,27 +582,35 @@ function doGuest(){
 }
 
 /* ===== GOOGLE SIGN-IN ===== */
+const G_CLIENT_ID = '628310818792-hbl92e1m3nd1bb69rejs7r8n7ptkffa5.apps.googleusercontent.com';
+
 function doGoogleSignIn(){
   if(typeof google !== 'undefined' && google.accounts){
     google.accounts.id.initialize({
-      client_id: '628310818792-hbl92e1m3nd1bb69rejs7r8n7ptkffa5.apps.googleusercontent.com',
+      client_id: G_CLIENT_ID,
       callback: handleGoogleCredential,
       auto_select: false,
       cancel_on_tap_outside: true,
     });
     google.accounts.id.prompt((notification) => {
       if(notification.isNotDisplayed() || notification.isSkippedMoment()){
+        // One Tap blocked/dismissed → use redirect flow
         googleFallbackFlow();
       }
     });
   } else {
+    // Google SDK not loaded → use redirect flow
     googleFallbackFlow();
   }
 }
 
 function handleGoogleCredential(response){
   try {
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    // Safely decode JWT payload (handles unicode chars in names/emails)
+    const base64 = response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const payload = JSON.parse(decodeURIComponent(
+      atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+    ));
     const gUser = {
       id: 'g_' + payload.sub,
       username: payload.email.split('@')[0],
@@ -622,8 +630,31 @@ function handleGoogleCredential(response){
 }
 
 function googleFallbackFlow(){
-  showErr('lerr', 'Google popup blocked or not configured.');
+  // Redirect-based OAuth2 — works in all browsers regardless of popup/cookie settings
+  const redirectUri = encodeURIComponent(window.location.href.split('?')[0].split('#')[0]);
+  const scope      = encodeURIComponent('openid email profile');
+  const nonce      = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth'
+    + '?client_id='    + G_CLIENT_ID
+    + '&redirect_uri=' + redirectUri
+    + '&response_type=id_token'
+    + '&scope='        + scope
+    + '&nonce='        + nonce
+    + '&prompt=select_account';
+  window.location.href = url;
 }
+
+// Runs on every page load — catches the id_token Google puts in the URL hash after redirect
+(function handleGoogleRedirect(){
+  const hash = window.location.hash;
+  if(!hash || !hash.includes('id_token')) return;
+  const params  = new URLSearchParams(hash.slice(1));
+  const idToken = params.get('id_token');
+  if(!idToken) return;
+  // Immediately clean the token out of the URL (security + UX)
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  handleGoogleCredential({ credential: idToken });
+})();
 
 function loginUser(u){
   CU = u;
