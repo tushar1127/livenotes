@@ -713,17 +713,21 @@ function toggleTheme(){
 function handleGoogleLogin(response) {
   const data = parseJwt(response.credential);
 
-  const user = {
+  const googleUser = {
+    id: 'g_' + Date.now(),
+    username: data.email,
     name: data.name,
     email: data.email,
-    picture: data.picture
+    password: null   // not needed for Google users
   };
 
-  localStorage.setItem("ln_user", JSON.stringify(user));
+  // Save Google user if not already saved
+  if (!USERS.find(u => u.email === googleUser.email)) {
+    USERS.push(googleUser);
+    localStorage.setItem('ln_users', JSON.stringify(USERS));
+  }
 
-  alert("Welcome " + user.name);
-
-  document.getElementById("auth-screen").style.display = "none";
+  loginUser(googleUser);   // ✅ This opens dashboard properly
 }
 
 function parseJwt(token) {
