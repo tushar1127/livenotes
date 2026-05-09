@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,40 +8,18 @@
 <title>LiveNotes</title>
 <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0
+*{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0e0e10;
-  --surface:#17171a;
-  --surface2:#1f1f24;
-  --border:rgba(255,255,255,0.08);
-  --borderh:rgba(255,255,255,0.16);
-  --text:#f0ede8;
-  --muted:#7a7a8a;
-  --accent:#c8a97e;
-  --ag:rgba(200,169,126,0.15);
-  --as:rgba(200,169,126,0.08);
-  --danger:#e05252;
-  --green:#5ecc8b;
-  --t1:#3d2e52;--t1t:#c9a8f0;
-  --t2:#1e3a4a;--t2t:#7fc9e8;
-  --t3:#2d3a1e;--t3t:#9ecc6e;
-}
-/* LIGHT MODE */
-body.light{
-  --bg:#f6f6f8;
-  --surface:#ffffff;
-  --surface2:#f0f0f3;
-  --border:rgba(0,0,0,0.08);
-  --borderh:rgba(0,0,0,0.15);
-  --text:#1c1c1c;
-  --muted:#666;
-  --accent:#8b5e3c;
-  --ag:rgba(139,94,60,0.15);
-  --as:rgba(139,94,60,0.08);
+  --bg:#0e0e10;--surface:#17171a;--surface2:#1f1f24;
+  --border:rgba(255,255,255,0.08);--borderh:rgba(255,255,255,0.16);
+  --text:#f0ede8;--muted:#7a7a8a;
+  --accent:#c8a97e;--ag:rgba(200,169,126,0.15);--as:rgba(200,169,126,0.08);
+  --danger:#e05252;--green:#5ecc8b;
+  --t1:#3d2e52;--t1t:#c9a8f0;--t2:#1e3a4a;--t2t:#7fc9e8;--t3:#2d3a1e;--t3t:#9ecc6e;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-/* ── AUTH ── */
+/* -- AUTH -- */
 #auth-screen{
   position:fixed;inset:0;z-index:100;
   background:linear-gradient(135deg,#0e0e10 0%,#1a1020 50%,#0e1a0e 100%);
@@ -98,7 +77,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   margin-bottom:12px;display:none;
 }
 
-/* ── APP ── */
+/* -- APP -- */
 #app{display:none;height:100vh;flex-direction:column}
 #app.visible{display:flex}
 
@@ -262,71 +241,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 <!-- AUTH -->
 <div id="auth-screen">
-
   <!-- LOGIN -->
   <div class="auth-card" id="lpanel">
-
     <div class="auth-logo">LiveNotes</div>
     <p class="auth-sub">Sign in to keep your notes</p>
-
     <div class="auth-box">
-
       <div class="auth-err" id="lerr"></div>
-
-      <input 
-        class="auth-field"
-        id="lu"
-        type="text"
-        placeholder="Username or email"
-        autocomplete="username"
-      >
-
+      <input class="auth-field" id="lu" type="text" placeholder="Username or email" autocomplete="username">
       <div class="pw-wrap">
-        <input 
-          class="auth-field"
-          id="lp"
-          type="password"
-          placeholder="Password"
-          autocomplete="current-password"
-          onkeydown="if(event.key==='Enter')doLogin()"
-        >
-        <button 
-          class="pw-toggle"
-          onclick="tpw('lp',this)"
-        >
-          Show
-        </button>
+        <input class="auth-field" id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="pw-toggle" onclick="tpw('lp',this)">Show</button>
       </div>
-
-      <button 
-        class="auth-btn"
-        onclick="doLogin()"
-        style="margin-top:8px"
-      >
-        Log In
-      </button>
-
-      <div class="auth-divider">
-        <span>OR</span>
-      </div>
-
-      <button 
-        class="auth-btn ghost"
-        onclick="doGuest()"
-      >
-        Continue as Guest
-      </button>
-
+      <button class="auth-btn" onclick="doLogin()" style="margin-top:8px">Log In</button>
+      <div class="auth-divider"><span>OR</span></div>
+      <button class="auth-btn ghost" onclick="doGuest()">Continue as Guest</button>
     </div>
-
-    <div class="auth-switch">
-      Don't have an account?
-      <a onclick="sp('s')">Sign up</a>
-    </div>
-
+    <div class="auth-switch">Don't have an account? <a onclick="sp('s')">Sign up</a></div>
   </div>
-
-</div>
 
   <!-- SIGNUP -->
   <div class="auth-card" id="spanel" style="display:none">
@@ -357,6 +288,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <div class="nav-avatar" id="nav-av">?</div>
       <span class="nav-uname" id="nav-nm">Guest</span>
     </div>
+    <button class="nav-logout" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
     <button class="nav-logout" onclick="doLogout()">Log out</button>
   </div>
 
@@ -364,8 +296,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <!-- SIDEBAR -->
     <div id="sidebar">
       <div class="sbh">
-        <input type="text" id="search-box" placeholder="Search notes…" oninput="renderList()">
-        <button class="new-btn" onclick="createNote()"><span style="font-size:17px;line-height:1">＋</span>New Note</button>
+        <input type="text" id="search-box" placeholder="Search notes�" oninput="renderList()">
+        <button class="new-btn" onclick="createNote()"><span style="font-size:17px;line-height:1">+</span>New Note</button>
       </div>
       <div class="sb-lbl">All Notes</div>
       <div id="notes-list"></div>
@@ -375,20 +307,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div id="main">
       <div id="toolbar">
         <!-- Undo/Redo -->
-        <button class="tb-btn" id="btn-undo" title="Undo (Ctrl+Z)" onclick="doUndo()" style="opacity:.35;font-size:15px">↩</button>
-        <button class="tb-btn" id="btn-redo" title="Redo (Ctrl+Y / Ctrl+Shift+Z)" onclick="doRedo()" style="opacity:.35;font-size:15px">↪</button>
+        <button class="tb-btn" id="btn-undo" title="Undo (Ctrl+Z)" onclick="doUndo()" style="opacity:.35;font-size:15px">?</button>
+        <button class="tb-btn" id="btn-redo" title="Redo (Ctrl+Y / Ctrl+Shift+Z)" onclick="doRedo()" style="opacity:.35;font-size:15px">?</button>
         <div class="tsep"></div>
 
-        <!-- Bold Italic Underline — these work on contenteditable -->
+        <!-- Bold Italic Underline � these work on contenteditable -->
         <button class="tb-btn" id="fmt-bold"      title="Bold (Ctrl+B)"      onclick="rf('bold')"     ><b>B</b></button>
         <button class="tb-btn" id="fmt-italic"    title="Italic (Ctrl+I)"    onclick="rf('italic')"   ><i style="font-style:italic">I</i></button>
         <button class="tb-btn" id="fmt-underline" title="Underline (Ctrl+U)" onclick="rf('underline')"><u>U</u></button>
         <div class="tsep"></div>
 
         <!-- Inserts -->
-        <button class="tb-btn" title="Bullet list (ul)"   onclick="ri('ul')">•≡</button>
-        <button class="tb-btn" title="Numbered list (ol)" onclick="ri('ol')">1≡</button>
-        <button class="tb-btn" title="Horizontal rule"    onclick="ri('hr')">──</button>
+        <button class="tb-btn" title="Bullet list (ul)"   onclick="ri('ul')">�=</button>
+        <button class="tb-btn" title="Numbered list (ol)" onclick="ri('ol')">1=</button>
+        <button class="tb-btn" title="Horizontal rule"    onclick="ri('hr')">--</button>
         <button class="tb-btn" title="Code block"         onclick="ri('code')" style="font-size:11px">&lt;/&gt;</button>
         <div class="tsep"></div>
 
@@ -402,26 +334,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
         <!-- Window controls -->
         <div class="win-grp">
-          <button class="win-btn" id="btn-max" title="Maximize editor (hide sidebar)" onclick="toggleMax()">⛶</button>
-          <button class="win-btn" id="btn-min" title="Restore sidebar"                onclick="toggleMin()" style="display:none">⊡</button>
+          <button class="win-btn" id="btn-max" title="Maximize editor (hide sidebar)" onclick="toggleMax()">?</button>
+          <button class="win-btn" id="btn-min" title="Restore sidebar"                onclick="toggleMin()" style="display:none">?</button>
         </div>
       </div>
 
       <div id="empty-state">
-        <div class="es-ico">📝</div>
+        <div class="es-ico">??</div>
         <div class="es-t">Nothing open</div>
         <div class="es-s">Create a note or pick one from the sidebar</div>
       </div>
 
       <div id="editor-wrap">
         <div id="ea">
-          <input type="text" id="note-title" placeholder="Untitled note…" oninput="onTitleInput()">
+          <input type="text" id="note-title" placeholder="Untitled note�" oninput="onTitleInput()">
           <div class="e-meta">
             <span class="e-date" id="e-date"></span>
             <span id="apill" class="ntag" style="display:none"></span>
           </div>
           <div id="note-body" contenteditable="true" spellcheck="true"
-               data-ph="Start writing… your words are saved instantly."
+               data-ph="Start writing� your words are saved instantly."
                oninput="onBodyInput()"
                onkeydown="handleKey(event)"
                onmouseup="updFmt()"
@@ -439,7 +371,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 </div>
 
 <script>
-/* ══════════════════════ AUTH ══════════════════════ */
+/* ---------------------- AUTH ---------------------- */
 let USERS = JSON.parse(localStorage.getItem('ln_users') || '[]');
 let CU = null; // current user
 
@@ -495,15 +427,15 @@ function doLogout(){
 // auto-login
 (function(){ const s=localStorage.getItem('ln_sess'); if(s){try{loginUser(JSON.parse(s));}catch(e){}} })();
 
-/* ══════════════════════ NOTES DATA ══════════════════════ */
+/* ---------------------- NOTES DATA ---------------------- */
 let notes=[], activeId=null, saveTimer=null;
 function stKey(){ return 'ln_notes_'+(CU?CU.id:'g'); }
 
 function initNotes(){
   notes=JSON.parse(localStorage.getItem(stKey())||'[]');
   if(!notes.length){
-    const d={id:Date.now(),title:'Welcome to LiveNotes ✦',
-      body:'<p>Everything you write is <b>saved instantly</b> to your browser.</p><p><br></p><p><b>What\'s new in this version:</b></p><ul><li>Instagram-style login &amp; sign up</li><li>Working <b>Bold</b>, <i>Italic</i>, <u>Underline</u> buttons</li><li>Ctrl+Z / Ctrl+Y Undo &amp; Redo</li><li>Maximize ⛶ and Minimize ⊡ editor</li><li>Tags: Ideas, Work, Personal</li></ul><p><br></p><p>Create a new note with the <b>+ New Note</b> button on the left!</p>',
+    const d={id:Date.now(),title:'Welcome to LiveNotes ?',
+      body:'<p>Everything you write is <b>saved instantly</b> to your browser.</p><p><br></p><p><b>What\'s new in this version:</b></p><ul><li>Instagram-style login &amp; sign up</li><li>Working <b>Bold</b>, <i>Italic</i>, <u>Underline</u> buttons</li><li>Ctrl+Z / Ctrl+Y Undo &amp; Redo</li><li>Maximize ? and Minimize ? editor</li><li>Tags: Ideas, Work, Personal</li></ul><p><br></p><p>Create a new note with the <b>+ New Note</b> button on the left!</p>',
       tag:'purple',created:Date.now(),modified:Date.now()};
     notes.push(d); saveToDisk();
   }
@@ -518,7 +450,7 @@ function saveToDisk(){
   saveTimer=setTimeout(()=>ind.classList.remove('on'),1800);
 }
 
-/* ══════════════════════ UNDO/REDO ══════════════════════ */
+/* ---------------------- UNDO/REDO ---------------------- */
 const UH={};
 const MH=200;
 function gh(id){ if(!UH[id])UH[id]={s:[],c:-1}; return UH[id]; }
@@ -559,7 +491,7 @@ function updUB(){
 let ht=null;
 function schedH(){ clearTimeout(ht); const el=document.getElementById('note-body'); const html=el.innerHTML; ht=setTimeout(()=>pushH(activeId,html),500); }
 
-/* ══════════════════════ RICH TEXT ══════════════════════ */
+/* ---------------------- RICH TEXT ---------------------- */
 function rf(cmd){
   document.getElementById('note-body').focus();
   document.execCommand(cmd,false,null);
@@ -606,7 +538,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='y'){e.preventDefault();doRedo();}
 });
 
-/* ══════════════════════ NOTE CRUD ══════════════════════ */
+/* ---------------------- NOTE CRUD ---------------------- */
 function createNote(){
   const now=Date.now();
   const n={id:now,title:'',body:'',tag:null,created:now,modified:now};
@@ -634,7 +566,7 @@ function openNote(id){
   const d=new Date(note.modified);
   document.getElementById('e-date').textContent=
     d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+
-    ' · '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    ' � '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   updPill(note.tag);updStats();hlActive(id);updUB();updFmt();
   document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('sel'));
   if(note.tag)document.getElementById('tag-'+note.tag)?.classList.add('sel');
@@ -706,12 +638,12 @@ function renderList(keep=false){
     div.dataset.id=note.id;div.onclick=()=>openNote(note.id);
     const d=new Date(note.modified);
     const ts=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const prev=strip(note.body||'').replace(/\n/g,' ').substring(0,54)||'No content…';
+    const prev=strip(note.body||'').replace(/\n/g,' ').substring(0,54)||'No content�';
     const th=note.tag?`<span class="ntag ${C[note.tag]||''}">${L[note.tag]||note.tag}</span>`:'';
     div.innerHTML=`<div class="ni-t">${esc(note.title||'Untitled')}</div>
       <div class="ni-p">${esc(prev)}</div>
       <div class="ni-m">${th}<span class="ni-ts">${ts}</span></div>
-      <button class="delbtn" onclick="deleteNote(${note.id},event)">×</button>`;
+      <button class="delbtn" onclick="deleteNote(${note.id},event)">�</button>`;
     list.appendChild(div);
   });
   if(keep)list.scrollTop=st;
@@ -720,7 +652,7 @@ function renderList(keep=false){
 function strip(h){return h.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* ══════════════════════ MAXIMIZE / MINIMIZE ══════════════════════ */
+/* ---------------------- MAXIMIZE / MINIMIZE ---------------------- */
 function toggleMax(){
   document.getElementById('app').classList.add('maximized');
   document.getElementById('btn-max').style.display='none';
@@ -741,8 +673,20 @@ function toggleTheme(){
   document.getElementById('themeBtn').textContent =
     isLight ? '☀ Light' : '🌙 Dark';
 }
-  
+
+/* Load Saved Theme */
+(function(){
+  const savedTheme = localStorage.getItem('ln_theme');
+  if(savedTheme === 'light'){
+    document.body.classList.add('light');
+    document.getElementById('themeBtn').textContent = '☀ Light';
+  }
 })();
+  
 </script>
 </body>
 </html>
+
+
+
+Add Code in 
