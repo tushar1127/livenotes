@@ -1,61 +1,80 @@
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LiveNotes</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- Google Sign-In -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
+
+/* ===== THEME VARIABLES ===== */
+[data-theme="dark"]{
   --bg:#0e0e10;--surface:#17171a;--surface2:#1f1f24;
   --border:rgba(255,255,255,0.08);--borderh:rgba(255,255,255,0.16);
-  --text:#f0ede8;--muted:#7a7a8a;
+  --text:#f0ede8;--muted:#7a7a8a;--shadow:rgba(0,0,0,0.5);
   --accent:#c8a97e;--ag:rgba(200,169,126,0.15);--as:rgba(200,169,126,0.08);
   --danger:#e05252;--green:#5ecc8b;
   --t1:#3d2e52;--t1t:#c9a8f0;--t2:#1e3a4a;--t2t:#7fc9e8;--t3:#2d3a1e;--t3t:#9ecc6e;
+  --google-btn:#1e1e22;--google-border:rgba(255,255,255,0.12);
+  --note-c1:#3d2e52;--note-c2:#1e3a4a;--note-c3:#2d3a1e;--note-c4:#3a2a1e;--note-c5:#1e2a3a;
+  --auth-grad:linear-gradient(135deg,#0e0e10 0%,#1a1020 50%,#0e1a0e 100%);
+  --theme-ico:"☀️";
 }
-/* ═════════════ LIGHT MODE ═════════════ */
-body.light{
-  --bg:#f5f5f7;
-  --surface:#ffffff;
-  --surface2:#f0f0f3;
-  --border:rgba(0,0,0,0.08);
-  --borderh:rgba(0,0,0,0.16);
-  --text:#1c1c1e;
-  --muted:#6e6e73;
-  --accent:#b07a3d;
-  --ag:rgba(176,122,61,0.15);
-  --as:rgba(176,122,61,0.08);
+[data-theme="light"]{
+  --bg:#f5f3ef;--surface:#ffffff;--surface2:#f0ede8;
+  --border:rgba(0,0,0,0.08);--borderh:rgba(0,0,0,0.16);
+  --text:#1a1a1e;--muted:#888898;--shadow:rgba(0,0,0,0.12);
+  --accent:#8b6f47;--ag:rgba(139,111,71,0.12);--as:rgba(139,111,71,0.07);
+  --danger:#d64040;--green:#3aaa6a;
+  --t1:#ede4f8;--t1t:#7b4fc9;--t2:#dff0f8;--t2t:#2e86b5;--t3:#e4f4d8;--t3t:#4a8a24;
+  --google-btn:#ffffff;--google-border:rgba(0,0,0,0.15);
+  --note-c1:#ede4f8;--note-c2:#dff0f8;--note-c3:#e4f4d8;--note-c4:#fdf0e0;--note-c5:#e0e8f8;
+  --auth-grad:linear-gradient(135deg,#f5f3ef 0%,#ede8f5 50%,#edf5e8 100%);
+  --theme-ico:"🌙";
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
 
-/* -- AUTH -- */
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;transition:background .3s,color .3s}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle{
+  width:36px;height:36px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .2s;flex-shrink:0;
+}
+.theme-toggle:hover{border-color:var(--borderh);background:var(--surface);transform:scale(1.05)}
+
+/* ===== AUTH ===== */
 #auth-screen{
   position:fixed;inset:0;z-index:100;
-  background:linear-gradient(135deg,#0e0e10 0%,#1a1020 50%,#0e1a0e 100%);
+  background:var(--auth-grad);
   display:flex;align-items:center;justify-content:center;
+  transition:background .3s;
 }
-.auth-card{width:100%;max-width:396px;padding:0 20px;animation:fadeUp .45s ease both}
+.auth-card{width:100%;max-width:400px;padding:0 20px;animation:fadeUp .45s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* Auth Theme Toggle */
+.auth-theme-row{display:flex;justify-content:flex-end;margin-bottom:12px}
+
 .auth-logo{
   font-family:'Grand Hotel',cursive;font-size:56px;text-align:center;
-  background:linear-gradient(135deg,#c8a97e,#f0ede8,#c8a97e);
+  background:linear-gradient(135deg,#c8a97e,var(--text),#c8a97e);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   margin-bottom:8px;
 }
 .auth-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:22px}
 .auth-box{
-  background:rgba(23,23,26,.92);border:1px solid var(--border);
-  border-radius:12px;padding:28px 24px;margin-bottom:10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:28px 24px;margin-bottom:10px;
+  box-shadow:0 8px 32px var(--shadow);transition:background .3s,border-color .3s;
 }
 .auth-field{
   width:100%;background:var(--surface2);border:1px solid var(--border);
   border-radius:8px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;
-  font-size:14px;outline:none;transition:border-color .2s;margin-bottom:10px;display:block;
+  font-size:14px;outline:none;transition:border-color .2s,background .3s;margin-bottom:10px;display:block;
 }
 .auth-field:focus{border-color:var(--accent)}
 .auth-field::placeholder{color:var(--muted);font-size:13px}
@@ -74,14 +93,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   transition:all .2s;margin-top:4px;letter-spacing:.3px;
 }
 .auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,169,126,.3)}
-.auth-btn.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);box-shadow:none}
-.auth-btn.ghost:hover{border-color:var(--borderh)}
-.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0}
-.auth-divider span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px}
+.auth-btn.ghost{
+  background:var(--surface2);color:var(--text);
+  border:1px solid var(--border);box-shadow:none;
+}
+.auth-btn.ghost:hover{border-color:var(--borderh);transform:translateY(-1px)}
+
+/* Google Sign-In Button */
+.google-btn{
+  width:100%;padding:12px 14px;border-radius:8px;
+  border:1px solid var(--google-border);background:var(--google-btn);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all .2s;margin-top:8px;
+}
+.google-btn:hover{border-color:var(--borderh);transform:translateY(-1px);box-shadow:0 4px 12px var(--shadow)}
+.google-icon{width:18px;height:18px;flex-shrink:0}
+
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
+.auth-divider span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;white-space:nowrap}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .auth-switch{
-  background:rgba(23,23,26,.92);border:1px solid var(--border);
+  background:var(--surface);border:1px solid var(--border);
   border-radius:12px;padding:16px;text-align:center;font-size:14px;color:var(--muted);
+  transition:background .3s;
 }
 .auth-switch a{color:var(--accent);font-weight:600;cursor:pointer}
 .auth-switch a:hover{text-decoration:underline}
@@ -90,17 +125,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   border-radius:8px;padding:9px 13px;font-size:13px;color:#f08080;
   margin-bottom:12px;display:none;
 }
-<div id="auth-screen">
+.auth-ok{
+  background:rgba(94,204,139,.1);border:1px solid rgba(94,204,139,.3);
+  border-radius:8px;padding:9px 13px;font-size:13px;color:#5ecc8b;
+  margin-bottom:12px;display:none;text-align:center;
+}
 
-  <!-- LOGIN PANEL -->
-  <div class="auth-card" id="lpanel">
-    <div class="auth-logo">LiveNotes</div>
-    <p class="auth-sub">Sign in to keep your notes</p>
-
-    <div class="auth-box">
-  </div>
-  
-/* -- APP -- */
+/* ===== APP ===== */
 #app{display:none;height:100vh;flex-direction:column}
 #app.visible{display:flex}
 
@@ -108,29 +139,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #topnav{
   height:50px;background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0;
+  transition:background .3s,border-color .3s;
 }
 .nav-logo{
   font-family:'Grand Hotel',cursive;font-size:26px;
-  background:linear-gradient(135deg,#c8a97e,#f0ede8);
+  background:linear-gradient(135deg,#c8a97e,var(--text));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-.live-dot{
-  width:7px;height:7px;background:var(--accent);border-radius:50%;
-  animation:pulse 2s infinite;
-}
+.live-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
 .nspc{flex:1}
-.nav-user{
-  display:flex;align-items:center;gap:8px;padding:4px 10px;
-  border-radius:8px;border:1px solid transparent;cursor:default;
-}
+.nav-user{display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:8px}
 .nav-avatar{
   width:28px;height:28px;border-radius:50%;
   background:linear-gradient(135deg,#c8a97e,#b8905e);
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:600;color:#fff;flex-shrink:0;
+  font-size:12px;font-weight:600;color:#fff;flex-shrink:0;overflow:hidden;
 }
-.nav-uname{font-size:13px;font-weight:500}
+.nav-avatar img{width:100%;height:100%;object-fit:cover}
+.nav-uname{font-size:13px;font-weight:500;color:var(--text)}
 .nav-logout{
   padding:5px 13px;border-radius:7px;border:1px solid var(--border);
   background:transparent;color:var(--muted);font-size:12px;font-weight:500;
@@ -145,14 +172,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #sidebar{
   width:268px;min-width:268px;background:var(--surface);
   border-right:1px solid var(--border);display:flex;flex-direction:column;
-  transition:width .28s ease,min-width .28s ease,opacity .25s;overflow:hidden;
+  transition:width .28s ease,min-width .28s ease,opacity .25s,background .3s,border-color .3s;overflow:hidden;
 }
 #app.maximized #sidebar{width:0!important;min-width:0!important;opacity:0}
 .sbh{padding:14px 14px 10px;border-bottom:1px solid var(--border)}
 #search-box{
   width:100%;background:var(--surface2);border:1px solid var(--border);
   border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;
-  font-size:13px;padding:8px 12px 8px 32px;outline:none;transition:border-color .2s;
+  font-size:13px;padding:8px 12px 8px 32px;outline:none;transition:border-color .2s,background .3s;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' stroke='%237a7a8a' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:10px center;
 }
@@ -169,9 +196,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 #notes-list{flex:1;overflow-y:auto;padding:3px 7px 8px}
 #notes-list::-webkit-scrollbar{width:3px}
 #notes-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.ni{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:2px;position:relative;border:1px solid transparent;transition:background .15s}
+.ni{
+  padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:2px;
+  position:relative;border:1px solid transparent;transition:background .15s;
+}
 .ni:hover{background:var(--surface2);border-color:var(--border)}
 .ni.active{background:var(--as);border-color:rgba(200,169,126,.2)}
+
+/* Note color tints in sidebar */
+.ni[data-color="rose"]{background:rgba(200,80,80,.08)!important;border-color:rgba(200,80,80,.2)!important}
+.ni[data-color="amber"]{background:rgba(200,140,60,.08)!important;border-color:rgba(200,140,60,.2)!important}
+.ni[data-color="lime"]{background:rgba(100,180,60,.08)!important;border-color:rgba(100,180,60,.2)!important}
+.ni[data-color="sky"]{background:rgba(60,140,200,.08)!important;border-color:rgba(60,140,200,.2)!important}
+.ni[data-color="violet"]{background:rgba(140,80,200,.08)!important;border-color:rgba(140,80,200,.2)!important}
+.ni[data-color="pink"]{background:rgba(200,80,160,.08)!important;border-color:rgba(200,80,160,.2)!important}
+
 .ni-t{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
 .ni.active .ni-t{color:var(--accent)}
 .ni-p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -188,13 +227,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .ni:hover .delbtn{display:flex}
 .delbtn:hover{background:rgba(224,82,82,.25)}
 
-/* main */
+/* ===== MAIN ===== */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
 /* toolbar */
 #toolbar{
   padding:8px 18px;border-bottom:1px solid var(--border);
   display:none;align-items:center;gap:5px;background:var(--surface);flex-shrink:0;flex-wrap:wrap;
+  transition:background .3s,border-color .3s;
 }
 .tb-btn{
   height:30px;min-width:30px;padding:0 8px;background:transparent;
@@ -207,7 +247,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .tsep{width:1px;height:20px;background:var(--border);margin:0 2px;flex-shrink:0}
 .tpill{font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid transparent;transition:all .15s;font-weight:500}
 .tpill:hover{opacity:.8}
-.tpill.sel{border-color:currentColor}
+.tpill.sel{border-color:currentColor;box-shadow:0 0 0 1px currentColor}
 .sav-ind{font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px;margin-left:4px;opacity:0;transition:opacity .3s;font-family:'DM Mono',monospace}
 .sav-ind.on{opacity:1}
 .sav-dot{width:6px;height:6px;background:var(--green);border-radius:50%}
@@ -219,8 +259,43 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 }
 .win-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--borderh)}
 
-/* editor */
+/* ===== NOTE COLOR SWATCHES IN TOOLBAR ===== */
+.color-swatches{display:flex;align-items:center;gap:4px}
+.csw{
+  width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+  transition:all .18s;flex-shrink:0;
+}
+.csw:hover{transform:scale(1.2)}
+.csw.sel{border-color:var(--text);transform:scale(1.15)}
+.csw.csw-none{background:var(--surface2);border:2px solid var(--border);font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.csw[data-c="rose"]{background:#e05050}
+.csw[data-c="amber"]{background:#e08c3c}
+.csw[data-c="lime"]{background:#64b43c}
+.csw[data-c="sky"]{background:#3c8cc8}
+.csw[data-c="violet"]{background:#8c50c8}
+.csw[data-c="pink"]{background:#c850a0}
+
+/* ===== EDITOR ===== */
 #editor-wrap{flex:1;display:none;flex-direction:column;overflow:hidden}
+
+/* Note color backgrounds in editor */
+#editor-wrap[data-color="rose"]{background:linear-gradient(180deg,rgba(200,80,80,.06) 0%,transparent 200px)!important}
+#editor-wrap[data-color="amber"]{background:linear-gradient(180deg,rgba(200,140,60,.06) 0%,transparent 200px)!important}
+#editor-wrap[data-color="lime"]{background:linear-gradient(180deg,rgba(100,180,60,.06) 0%,transparent 200px)!important}
+#editor-wrap[data-color="sky"]{background:linear-gradient(180deg,rgba(60,140,200,.06) 0%,transparent 200px)!important}
+#editor-wrap[data-color="violet"]{background:linear-gradient(180deg,rgba(140,80,200,.06) 0%,transparent 200px)!important}
+#editor-wrap[data-color="pink"]{background:linear-gradient(180deg,rgba(200,80,160,.06) 0%,transparent 200px)!important}
+
+/* Color accent line at top of editor */
+.note-color-bar{height:3px;width:100%;flex-shrink:0;transition:background .2s}
+.note-color-bar[data-color="rose"]{background:linear-gradient(90deg,#e05050,#e07070)}
+.note-color-bar[data-color="amber"]{background:linear-gradient(90deg,#e08c3c,#e0a85c)}
+.note-color-bar[data-color="lime"]{background:linear-gradient(90deg,#64b43c,#84d45c)}
+.note-color-bar[data-color="sky"]{background:linear-gradient(90deg,#3c8cc8,#5caee8)}
+.note-color-bar[data-color="violet"]{background:linear-gradient(90deg,#8c50c8,#ac70e8)}
+.note-color-bar[data-color="pink"]{background:linear-gradient(90deg,#c850a0,#e870c0)}
+.note-color-bar[data-color=""]{background:transparent}
+
 #ea{flex:1;overflow-y:auto;padding:34px 52px}
 #ea::-webkit-scrollbar{width:4px}
 #ea::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -229,27 +304,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   background:transparent;border:none;outline:none;width:100%;
   margin-bottom:6px;caret-color:var(--accent);
 }
-#note-title::placeholder{color:rgba(240,237,232,.12)}
-.e-meta{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:18px}
+#note-title::placeholder{color:rgba(128,128,140,.2)}
+.e-meta{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap}
 .e-date{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
 #note-body{
   flex:1;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;
   line-height:1.88;color:var(--text);outline:none;min-height:380px;
   caret-color:var(--accent);word-break:break-word;
 }
-#note-body:empty::before{content:attr(data-ph);color:rgba(240,237,232,.12);pointer-events:none;display:block}
+#note-body:empty::before{content:attr(data-ph);color:rgba(128,128,140,.2);pointer-events:none;display:block}
 #note-body b,#note-body strong{font-weight:700}
 #note-body i,#note-body em{font-style:italic}
 #note-body u{text-decoration:underline}
 #note-body ul{padding-left:22px;margin:4px 0}
 #note-body ol{padding-left:22px;margin:4px 0}
 #note-body li{margin:2px 0}
-#note-body pre{background:rgba(255,255,255,.06);padding:12px;border-radius:8px;font-family:'DM Mono',monospace;font-size:13px;margin:8px 0;border:1px solid rgba(255,255,255,.08);white-space:pre-wrap}
-#note-body code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:13px}
-#note-body hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:14px 0}
+#note-body pre{background:rgba(128,128,140,.1);padding:12px;border-radius:8px;font-family:'DM Mono',monospace;font-size:13px;margin:8px 0;border:1px solid var(--border);white-space:pre-wrap}
+#note-body code{background:rgba(128,128,140,.12);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:13px}
+#note-body hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 /* status bar */
-#status-bar{padding:6px 18px;border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:18px;flex-shrink:0}
+#status-bar{
+  padding:6px 18px;border-top:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;gap:18px;flex-shrink:0;
+  transition:background .3s,border-color .3s;
+}
 .stat{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
 .stat b{color:var(--text);font-weight:500}
 
@@ -258,46 +337,54 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .es-ico{font-size:54px}
 .es-t{font-family:'Grand Hotel',cursive;font-size:26px;color:var(--muted)}
 .es-s{font-size:13px;color:var(--muted)}
+
+/* ===== GOOGLE MOCK NOTICE ===== */
+.g-notice{
+  font-size:11px;color:var(--muted);text-align:center;margin-top:8px;
+  padding:8px 12px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);
+  line-height:1.5;
+}
 </style>
 </head>
 <body>
 
-<div class="auth-box">
-  <div class="auth-err" id="lerr"></div>
-
-  <input class="auth-field" id="lu" type="text" placeholder="Username or email" autocomplete="username">
-
-  <div class="pw-wrap">
-    <input class="auth-field" id="lp" type="password" placeholder="Password"
-           autocomplete="current-password"
-           onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="pw-toggle" onclick="tpw('lp',this)">Show</button>
+<!-- AUTH -->
+<div id="auth-screen">
+  <!-- LOGIN -->
+  <div class="auth-card" id="lpanel">
+    <div class="auth-theme-row">
+      <button class="theme-toggle" onclick="toggleTheme()" id="auth-theme-btn" title="Toggle theme">☀️</button>
+    </div>
+    <div class="auth-logo">LiveNotes</div>
+    <p class="auth-sub">Sign in to keep your notes</p>
+    <div class="auth-box">
+      <div class="auth-err" id="lerr"></div>
+      <input class="auth-field" id="lu" type="text" placeholder="Username or email" autocomplete="username">
+      <div class="pw-wrap">
+        <input class="auth-field" id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="pw-toggle" onclick="tpw('lp',this)">Show</button>
+      </div>
+      <button class="auth-btn" onclick="doLogin()" style="margin-top:8px">Log In</button>
+      <div class="auth-divider"><span>OR</span></div>
+      <button class="auth-btn ghost" onclick="doGuest()">Continue as Guest</button>
+      <button class="google-btn" onclick="doGoogleSignIn()">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Continue with Google
+      </button>
+    </div>
+    <div class="auth-switch">Don't have an account? <a onclick="sp('s')">Sign up</a></div>
   </div>
 
-  <button class="auth-btn" onclick="doLogin()" style="margin-top:8px">Log In</button>
-
-  <div class="auth-divider"><span>OR</span></div>
-
-  <button class="auth-btn ghost" onclick="doGuest()">Continue as Guest</button>
-
-  <!-- GOOGLE LOGIN -->
-  <div id="g_id_onload"
-       data-client_id="628310818792-hbl92e1m3nd1bb69rejs7r8n7ptkffa5.apps.googleusercontent.com"
-       data-callback="handleGoogleLogin">
-  </div>
-
-  <div class="g_id_signin"
-       data-type="standard"
-       data-size="large"
-       data-theme="outline"
-       data-text="sign_in_with"
-       data-shape="rectangular"
-       data-logo_alignment="left">
-  </div>
-
-</div>
   <!-- SIGNUP -->
   <div class="auth-card" id="spanel" style="display:none">
+    <div class="auth-theme-row">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="auth-theme-btn2">☀️</button>
+    </div>
     <div class="auth-logo">LiveNotes</div>
     <p class="auth-sub">Create your free account</p>
     <div class="auth-box">
@@ -310,6 +397,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         <button class="pw-toggle" onclick="tpw('sp2',this)">Show</button>
       </div>
       <button class="auth-btn" onclick="doSignup()" style="margin-top:8px">Sign Up</button>
+      <div class="auth-divider"><span>OR</span></div>
+      <button class="google-btn" onclick="doGoogleSignIn()">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Sign up with Google
+      </button>
     </div>
     <div class="auth-switch">Already have an account? <a onclick="sp('l')">Log in</a></div>
   </div>
@@ -325,7 +422,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <div class="nav-avatar" id="nav-av">?</div>
       <span class="nav-uname" id="nav-nm">Guest</span>
     </div>
-    <button class="nav-logout" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+    <button class="theme-toggle" onclick="toggleTheme()" id="app-theme-btn" title="Toggle theme">☀️</button>
     <button class="nav-logout" onclick="doLogout()">Log out</button>
   </div>
 
@@ -333,7 +430,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <!-- SIDEBAR -->
     <div id="sidebar">
       <div class="sbh">
-        <input type="text" id="search-box" placeholder="Search notes�" oninput="renderList()">
+        <input type="text" id="search-box" placeholder="Search notes…" oninput="renderList()">
         <button class="new-btn" onclick="createNote()"><span style="font-size:17px;line-height:1">+</span>New Note</button>
       </div>
       <div class="sb-lbl">All Notes</div>
@@ -344,21 +441,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div id="main">
       <div id="toolbar">
         <!-- Undo/Redo -->
-        <button class="tb-btn" id="btn-undo" title="Undo (Ctrl+Z)" onclick="doUndo()" style="opacity:.35;font-size:15px">?</button>
-        <button class="tb-btn" id="btn-redo" title="Redo (Ctrl+Y / Ctrl+Shift+Z)" onclick="doRedo()" style="opacity:.35;font-size:15px">?</button>
+        <button class="tb-btn" id="btn-undo" title="Undo (Ctrl+Z)" onclick="doUndo()" style="opacity:.35;font-size:15px">↩</button>
+        <button class="tb-btn" id="btn-redo" title="Redo (Ctrl+Y)" onclick="doRedo()" style="opacity:.35;font-size:15px">↪</button>
         <div class="tsep"></div>
 
-        <!-- Bold Italic Underline � these work on contenteditable -->
+        <!-- Formatting -->
         <button class="tb-btn" id="fmt-bold"      title="Bold (Ctrl+B)"      onclick="rf('bold')"     ><b>B</b></button>
         <button class="tb-btn" id="fmt-italic"    title="Italic (Ctrl+I)"    onclick="rf('italic')"   ><i style="font-style:italic">I</i></button>
         <button class="tb-btn" id="fmt-underline" title="Underline (Ctrl+U)" onclick="rf('underline')"><u>U</u></button>
         <div class="tsep"></div>
 
         <!-- Inserts -->
-        <button class="tb-btn" title="Bullet list (ul)"   onclick="ri('ul')">�=</button>
-        <button class="tb-btn" title="Numbered list (ol)" onclick="ri('ol')">1=</button>
-        <button class="tb-btn" title="Horizontal rule"    onclick="ri('hr')">--</button>
-        <button class="tb-btn" title="Code block"         onclick="ri('code')" style="font-size:11px">&lt;/&gt;</button>
+        <button class="tb-btn" title="Bullet list"   onclick="ri('ul')">≡</button>
+        <button class="tb-btn" title="Numbered list" onclick="ri('ol')">1≡</button>
+        <button class="tb-btn" title="Horizontal rule" onclick="ri('hr')">—</button>
+        <button class="tb-btn" title="Code block" onclick="ri('code')" style="font-size:11px">&lt;/&gt;</button>
         <div class="tsep"></div>
 
         <!-- Tags -->
@@ -367,30 +464,46 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         <span class="tpill tb" id="tag-blue"   onclick="setTag('blue')">Work</span>
         <span class="tpill tg" id="tag-green"  onclick="setTag('green')">Personal</span>
 
+        <div class="tsep"></div>
+
+        <!-- Note Colors -->
+        <span style="font-size:11px;color:var(--muted);flex-shrink:0">Color:</span>
+        <div class="color-swatches">
+          <div class="csw csw-none" data-c="" onclick="setNoteColor('')" title="No color" id="csw-none">✕</div>
+          <div class="csw" data-c="rose"   onclick="setNoteColor('rose')"   title="Rose"   id="csw-rose"></div>
+          <div class="csw" data-c="amber"  onclick="setNoteColor('amber')"  title="Amber"  id="csw-amber"></div>
+          <div class="csw" data-c="lime"   onclick="setNoteColor('lime')"   title="Lime"   id="csw-lime"></div>
+          <div class="csw" data-c="sky"    onclick="setNoteColor('sky')"    title="Sky"    id="csw-sky"></div>
+          <div class="csw" data-c="violet" onclick="setNoteColor('violet')" title="Violet" id="csw-violet"></div>
+          <div class="csw" data-c="pink"   onclick="setNoteColor('pink')"   title="Pink"   id="csw-pink"></div>
+        </div>
+
         <div class="sav-ind" id="sav-ind"><div class="sav-dot"></div>Saved</div>
 
         <!-- Window controls -->
         <div class="win-grp">
-          <button class="win-btn" id="btn-max" title="Maximize editor (hide sidebar)" onclick="toggleMax()">?</button>
-          <button class="win-btn" id="btn-min" title="Restore sidebar"                onclick="toggleMin()" style="display:none">?</button>
+          <button class="win-btn" id="btn-max" title="Maximize" onclick="toggleMax()">⤢</button>
+          <button class="win-btn" id="btn-min" title="Restore"  onclick="toggleMin()" style="display:none">⤡</button>
         </div>
       </div>
 
       <div id="empty-state">
-        <div class="es-ico">??</div>
+        <div class="es-ico">📝</div>
         <div class="es-t">Nothing open</div>
         <div class="es-s">Create a note or pick one from the sidebar</div>
       </div>
 
       <div id="editor-wrap">
+        <div class="note-color-bar" id="color-bar" data-color=""></div>
         <div id="ea">
-          <input type="text" id="note-title" placeholder="Untitled note�" oninput="onTitleInput()">
+          <input type="text" id="note-title" placeholder="Untitled note…" oninput="onTitleInput()">
           <div class="e-meta">
             <span class="e-date" id="e-date"></span>
             <span id="apill" class="ntag" style="display:none"></span>
+            <span id="cpill" style="display:none"></span>
           </div>
           <div id="note-body" contenteditable="true" spellcheck="true"
-               data-ph="Start writing� your words are saved instantly."
+               data-ph="Start writing… your words are saved instantly."
                oninput="onBodyInput()"
                onkeydown="handleKey(event)"
                onmouseup="updFmt()"
@@ -408,350 +521,446 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 </div>
 
 <script>
-/* ---------------------- AUTH ---------------------- */
-let USERS = JSON.parse(localStorage.getItem('ln_users') || '[]');
-let CU = null; // current user
+/* ===================== THEME ===================== */
+let currentTheme = localStorage.getItem('ln_theme') || 'dark';
+applyTheme(currentTheme);
 
-function sp(p){ document.getElementById('lpanel').style.display=p==='l'?'':'none'; document.getElementById('spanel').style.display=p==='s'?'':'none'; }
-function tpw(id,btn){ const f=document.getElementById(id); f.type=f.type==='password'?'text':'password'; btn.textContent=f.type==='password'?'Show':'Hide'; }
-function showErr(id,m){ const e=document.getElementById(id); e.textContent=m; e.style.display='block'; setTimeout(()=>e.style.display='none',3200); }
+function applyTheme(t){
+  currentTheme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('ln_theme', t);
+  const icon = t === 'dark' ? '☀️' : '🌙';
+  document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = icon);
+}
+function toggleTheme(){ applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+
+/* ===================== AUTH ===================== */
+let USERS = JSON.parse(localStorage.getItem('ln_users') || '[]');
+let CU = null;
+
+function sp(p){
+  document.getElementById('lpanel').style.display = p==='l' ? '' : 'none';
+  document.getElementById('spanel').style.display = p==='s' ? '' : 'none';
+}
+function tpw(id, btn){
+  const f = document.getElementById(id);
+  f.type = f.type === 'password' ? 'text' : 'password';
+  btn.textContent = f.type === 'password' ? 'Show' : 'Hide';
+}
+function showErr(id, m){
+  const e = document.getElementById(id);
+  e.textContent = m; e.style.display = 'block';
+  setTimeout(() => e.style.display = 'none', 3400);
+}
 
 function doLogin(){
-  const u=document.getElementById('lu').value.trim();
-  const p=document.getElementById('lp').value;
-  if(!u||!p){showErr('lerr','Please fill in all fields.');return;}
-  const found=USERS.find(x=>(x.username===u||x.email===u)&&x.password===p);
-  if(!found){showErr('lerr','Wrong username or password.');return;}
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value;
+  if(!u || !p){ showErr('lerr', 'Please fill in all fields.'); return; }
+  const found = USERS.find(x => (x.username===u || x.email===u) && x.password===p);
+  if(!found){ showErr('lerr', 'Wrong username or password.'); return; }
   loginUser(found);
 }
 
 function doSignup(){
-  const name=document.getElementById('sn').value.trim();
-  const email=document.getElementById('se').value.trim();
-  const user=document.getElementById('su').value.trim();
-  const pass=document.getElementById('sp2').value;
-  if(!name||!email||!user||!pass){showErr('serr','All fields are required.');return;}
-  if(pass.length<6){showErr('serr','Password must be at least 6 characters.');return;}
-  if(!/\S+@\S+\.\S+/.test(email)){showErr('serr','Enter a valid email address.');return;}
-  if(USERS.find(x=>x.username===user)){showErr('serr','Username already taken.');return;}
-  if(USERS.find(x=>x.email===email)){showErr('serr','Email already registered.');return;}
-  const nu={id:'u_'+Date.now(),username:user,email,name,password:pass};
-  USERS.push(nu); localStorage.setItem('ln_users',JSON.stringify(USERS));
+  const name = document.getElementById('sn').value.trim();
+  const email = document.getElementById('se').value.trim();
+  const user = document.getElementById('su').value.trim();
+  const pass = document.getElementById('sp2').value;
+  if(!name||!email||!user||!pass){ showErr('serr','All fields are required.'); return; }
+  if(pass.length < 6){ showErr('serr','Password must be at least 6 characters.'); return; }
+  if(!/\S+@\S+\.\S+/.test(email)){ showErr('serr','Enter a valid email address.'); return; }
+  if(USERS.find(x => x.username === user)){ showErr('serr','Username already taken.'); return; }
+  if(USERS.find(x => x.email === email)){ showErr('serr','Email already registered.'); return; }
+  const nu = {id:'u_'+Date.now(), username:user, email, name, password:pass};
+  USERS.push(nu); localStorage.setItem('ln_users', JSON.stringify(USERS));
   loginUser(nu);
 }
 
-function doGuest(){ loginUser({id:'guest_'+Date.now(),username:'Guest',name:'Guest',email:''}); }
+function doGuest(){
+  loginUser({id:'guest_'+Date.now(), username:'Guest', name:'Guest', email:'', isGuest:true});
+}
+
+/* ===== GOOGLE SIGN-IN ===== */
+function doGoogleSignIn(){
+  if(typeof google !== 'undefined' && google.accounts){
+    google.accounts.id.initialize({
+      client_id: '628310818792-hbl92e1m3nd1bb69rejs7r8n7ptkffa5.apps.googleusercontent.com',
+      callback: handleGoogleCredential,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+    google.accounts.id.prompt((notification) => {
+      if(notification.isNotDisplayed() || notification.isSkippedMoment()){
+        googleFallbackFlow();
+      }
+    });
+  } else {
+    googleFallbackFlow();
+  }
+}
+
+function handleGoogleCredential(response){
+  try {
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const gUser = {
+      id: 'g_' + payload.sub,
+      username: payload.email.split('@')[0],
+      name: payload.name,
+      email: payload.email,
+      picture: payload.picture,
+      isGoogle: true
+    };
+    const idx = USERS.findIndex(u => u.email === gUser.email);
+    if(idx >= 0) USERS[idx] = {...USERS[idx], ...gUser};
+    else USERS.push(gUser);
+    localStorage.setItem('ln_users', JSON.stringify(USERS));
+    loginUser(gUser);
+  } catch(e){
+    showErr('lerr', 'Google sign-in failed. Please try again.');
+  }
+}
+
+function googleFallbackFlow(){
+  showErr('lerr', 'Google popup blocked or not configured.');
+}
 
 function loginUser(u){
-  CU=u; localStorage.setItem('ln_sess',JSON.stringify(u));
-  document.getElementById('auth-screen').style.display='none';
+  CU = u;
+  localStorage.setItem('ln_sess', JSON.stringify(u));
+  document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
-  document.getElementById('nav-nm').textContent=u.name||u.username;
-  document.getElementById('nav-av').textContent=(u.name||u.username)[0].toUpperCase();
+  document.getElementById('nav-nm').textContent = u.name || u.username;
+  const av = document.getElementById('nav-av');
+  if(u.picture){
+    av.innerHTML = `<img src="${u.picture}" alt="avatar">`;
+  } else {
+    av.textContent = (u.name || u.username)[0].toUpperCase();
+  }
   initNotes();
 }
 
 function doLogout(){
-  CU=null; localStorage.removeItem('ln_sess');
-  activeId=null; notes=[];
+  CU = null;
+  localStorage.removeItem('ln_sess');
+  activeId = null; notes = [];
   document.getElementById('app').classList.remove('visible');
-  document.getElementById('auth-screen').style.display='flex';
-  document.getElementById('lu').value=''; document.getElementById('lp').value='';
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('lu').value = '';
+  document.getElementById('lp').value = '';
   document.getElementById('app').classList.remove('maximized');
   sp('l');
 }
 
-// auto-login
-(function(){ const s=localStorage.getItem('ln_sess'); if(s){try{loginUser(JSON.parse(s));}catch(e){}} })();
+// Auto-login
+(function(){
+  const s = localStorage.getItem('ln_sess');
+  if(s){ try{ loginUser(JSON.parse(s)); } catch(e){} }
+})();
 
-/* ---------------------- NOTES DATA ---------------------- */
-let notes=[], activeId=null, saveTimer=null;
-function stKey(){ return 'ln_notes_'+(CU?CU.id:'g'); }
+/* ===================== NOTES DATA ===================== */
+let notes = [], activeId = null, saveTimer = null;
+function stKey(){ return 'ln_notes_' + (CU ? CU.id : 'g'); }
 
 function initNotes(){
-  notes=JSON.parse(localStorage.getItem(stKey())||'[]');
+  notes = JSON.parse(localStorage.getItem(stKey()) || '[]');
   if(!notes.length){
-    const d={id:Date.now(),title:'Welcome to LiveNotes ?',
-      body:'<p>Everything you write is <b>saved instantly</b> to your browser.</p><p><br></p><p><b>What\'s new in this version:</b></p><ul><li>Instagram-style login &amp; sign up</li><li>Working <b>Bold</b>, <i>Italic</i>, <u>Underline</u> buttons</li><li>Ctrl+Z / Ctrl+Y Undo &amp; Redo</li><li>Maximize ? and Minimize ? editor</li><li>Tags: Ideas, Work, Personal</li></ul><p><br></p><p>Create a new note with the <b>+ New Note</b> button on the left!</p>',
-      tag:'purple',created:Date.now(),modified:Date.now()};
+    const d = {
+      id: Date.now(),
+      title: 'Welcome to LiveNotes ✨',
+      body: '<p>Everything you write is <b>saved instantly</b> to your browser.</p><p><br></p><p><b>New features:</b></p><ul><li>🌙 Dark / ☀️ Light theme toggle</li><li>🎨 Note color coding (6 colors)</li><li>🔑 Google Sign-In support</li><li>Working <b>Bold</b>, <i>Italic</i>, <u>Underline</u></li><li>Ctrl+Z / Ctrl+Y Undo &amp; Redo</li></ul><p><br></p><p>Try the <b>Color</b> swatches in the toolbar above!</p>',
+      tag: 'purple',
+      color: 'violet',
+      created: Date.now(),
+      modified: Date.now()
+    };
     notes.push(d); saveToDisk();
   }
   renderList(); openNote(notes[0].id);
 }
 
 function saveToDisk(){
-  localStorage.setItem(stKey(),JSON.stringify(notes));
-  const ind=document.getElementById('sav-ind');
+  localStorage.setItem(stKey(), JSON.stringify(notes));
+  const ind = document.getElementById('sav-ind');
   ind.classList.add('on');
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>ind.classList.remove('on'),1800);
+  saveTimer = setTimeout(() => ind.classList.remove('on'), 1800);
 }
 
-/* ---------------------- UNDO/REDO ---------------------- */
-const UH={};
-const MH=200;
-function gh(id){ if(!UH[id])UH[id]={s:[],c:-1}; return UH[id]; }
+/* ===================== UNDO/REDO ===================== */
+const UH = {};
+const MH = 200;
+function gh(id){ if(!UH[id]) UH[id] = {s:[], c:-1}; return UH[id]; }
 
-function pushH(id,html){
-  const h=gh(id);
-  h.s=h.s.slice(0,h.c+1);
-  if(h.s[h.s.length-1]===html)return;
+function pushH(id, html){
+  const h = gh(id);
+  h.s = h.s.slice(0, h.c+1);
+  if(h.s[h.s.length-1] === html) return;
   h.s.push(html);
-  if(h.s.length>MH)h.s.shift();
-  h.c=h.s.length-1;
+  if(h.s.length > MH) h.s.shift();
+  h.c = h.s.length-1;
   updUB();
 }
 
-function seedH(id,html){ const h=gh(id); if(!h.s.length){h.s.push(html);h.c=0;} updUB(); }
+function seedH(id, html){
+  const h = gh(id);
+  if(!h.s.length){ h.s.push(html); h.c = 0; }
+  updUB();
+}
 
 function applyH(html){
-  const el=document.getElementById('note-body');
-  el.innerHTML=html;
-  const note=notes.find(n=>n.id===activeId);
-  if(note){note.body=html;note.modified=Date.now();updStats();saveToDisk();renderList(true);}
-  // move caret to end
-  const r=document.createRange(),s=window.getSelection();
-  r.selectNodeContents(el);r.collapse(false);s.removeAllRanges();s.addRange(r);
+  const el = document.getElementById('note-body');
+  el.innerHTML = html;
+  const note = notes.find(n => n.id === activeId);
+  if(note){ note.body = html; note.modified = Date.now(); updStats(); saveToDisk(); renderList(true); }
+  const r = document.createRange(), s = window.getSelection();
+  r.selectNodeContents(el); r.collapse(false); s.removeAllRanges(); s.addRange(r);
 }
 
-function doUndo(){ const h=gh(activeId);if(h.c<=0)return;h.c--;applyH(h.s[h.c]);updUB(); }
-function doRedo(){ const h=gh(activeId);if(h.c>=h.s.length-1)return;h.c++;applyH(h.s[h.c]);updUB(); }
+function doUndo(){ const h = gh(activeId); if(h.c <= 0) return; h.c--; applyH(h.s[h.c]); updUB(); }
+function doRedo(){ const h = gh(activeId); if(h.c >= h.s.length-1) return; h.c++; applyH(h.s[h.c]); updUB(); }
 
 function updUB(){
-  const h=activeId?gh(activeId):null;
-  const cu=h&&h.c>0, cr=h&&h.c<h.s.length-1;
-  const u=document.getElementById('btn-undo'),r=document.getElementById('btn-redo');
-  if(u)u.style.opacity=cu?'1':'0.35';
-  if(r)r.style.opacity=cr?'1':'0.35';
+  const h = activeId ? gh(activeId) : null;
+  const cu = h && h.c > 0, cr = h && h.c < h.s.length-1;
+  const u = document.getElementById('btn-undo'), r = document.getElementById('btn-redo');
+  if(u) u.style.opacity = cu ? '1' : '0.35';
+  if(r) r.style.opacity = cr ? '1' : '0.35';
 }
 
-let ht=null;
-function schedH(){ clearTimeout(ht); const el=document.getElementById('note-body'); const html=el.innerHTML; ht=setTimeout(()=>pushH(activeId,html),500); }
+let ht = null;
+function schedH(){
+  clearTimeout(ht);
+  const html = document.getElementById('note-body').innerHTML;
+  ht = setTimeout(() => pushH(activeId, html), 500);
+}
 
-/* ---------------------- RICH TEXT ---------------------- */
+/* ===================== RICH TEXT ===================== */
 function rf(cmd){
   document.getElementById('note-body').focus();
-  document.execCommand(cmd,false,null);
+  document.execCommand(cmd, false, null);
   updFmt(); onBodyInput();
 }
 
 function updFmt(){
-  ['bold','italic','underline'].forEach(c=>{
-    const b=document.getElementById('fmt-'+c);
-    if(b)b.classList.toggle('on',document.queryCommandState(c));
+  ['bold','italic','underline'].forEach(c => {
+    const b = document.getElementById('fmt-'+c);
+    if(b) b.classList.toggle('on', document.queryCommandState(c));
   });
 }
 
 function ri(type){
-  const el=document.getElementById('note-body'); el.focus();
-  if(type==='ul') document.execCommand('insertUnorderedList',false,null);
-  else if(type==='ol') document.execCommand('insertOrderedList',false,null);
-  else if(type==='hr') document.execCommand('insertHTML',false,'<hr>');
-  else if(type==='code'){
-    const sel=window.getSelection().toString();
-    if(sel) document.execCommand('insertHTML',false,`<code>${sel}</code>`);
-    else    document.execCommand('insertHTML',false,'<pre>// code here</pre>');
+  const el = document.getElementById('note-body'); el.focus();
+  if(type === 'ul') document.execCommand('insertUnorderedList', false, null);
+  else if(type === 'ol') document.execCommand('insertOrderedList', false, null);
+  else if(type === 'hr') document.execCommand('insertHTML', false, '<hr>');
+  else if(type === 'code'){
+    const sel = window.getSelection().toString();
+    if(sel) document.execCommand('insertHTML', false, `<code>${sel}</code>`);
+    else    document.execCommand('insertHTML', false, '<pre>// code here</pre>');
   }
   onBodyInput();
 }
 
 function handleKey(e){
-  const ctrl=e.ctrlKey||e.metaKey;
-  if(!ctrl)return;
-  if(e.key==='b'){e.preventDefault();rf('bold');}
-  else if(e.key==='i'){e.preventDefault();rf('italic');}
-  else if(e.key==='u'){e.preventDefault();rf('underline');}
-  else if(e.key==='z'){e.preventDefault();e.shiftKey?doRedo():doUndo();}
-  else if(e.key==='y'){e.preventDefault();doRedo();}
+  const ctrl = e.ctrlKey || e.metaKey;
+  if(!ctrl) return;
+  if(e.key==='b'){ e.preventDefault(); rf('bold'); }
+  else if(e.key==='i'){ e.preventDefault(); rf('italic'); }
+  else if(e.key==='u'){ e.preventDefault(); rf('underline'); }
+  else if(e.key==='z'){ e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); }
+  else if(e.key==='y'){ e.preventDefault(); doRedo(); }
 }
 
-// global shortcuts
-document.addEventListener('keydown',e=>{
-  const ctrl=e.ctrlKey||e.metaKey;
-  if(!ctrl)return;
-  const body=document.getElementById('note-body');
-  if(document.activeElement!==body)return;
-  if(e.key==='z'){e.preventDefault();e.shiftKey?doRedo():doUndo();}
-  else if(e.key==='y'){e.preventDefault();doRedo();}
+document.addEventListener('keydown', e => {
+  const ctrl = e.ctrlKey || e.metaKey;
+  if(!ctrl) return;
+  const body = document.getElementById('note-body');
+  if(document.activeElement !== body) return;
+  if(e.key==='z'){ e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); }
+  else if(e.key==='y'){ e.preventDefault(); doRedo(); }
 });
 
-/* ---------------------- NOTE CRUD ---------------------- */
-function createNote(){
-  const now=Date.now();
-  const n={id:now,title:'',body:'',tag:null,created:now,modified:now};
-  notes.unshift(n);saveToDisk();renderList();openNote(n.id);
-  setTimeout(()=>document.getElementById('note-title').focus(),60);
+/* ===================== NOTE COLOR ===================== */
+const colorDots = {
+  rose:'🔴', amber:'🟠', lime:'🟢', sky:'🔵', violet:'🟣', pink:'🩷'
+};
+
+function setNoteColor(color){
+  const note = notes.find(n => n.id === activeId);
+  if(!note) return;
+  note.color = note.color === color ? '' : color;
+  note.modified = Date.now();
+  saveToDisk();
+  applyNoteColor(note.color);
+  renderList(true);
 }
 
-function deleteNote(id,e){
+function applyNoteColor(color){
+  const ew = document.getElementById('editor-wrap');
+  const bar = document.getElementById('color-bar');
+  const cp = document.getElementById('cpill');
+  ew.setAttribute('data-color', color || '');
+  bar.setAttribute('data-color', color || '');
+
+  // Update color pill in meta
+  if(color){
+    cp.style.display = 'inline-flex';
+    cp.style.cssText = `display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)`;
+    cp.textContent = colorDots[color] + ' ' + color.charAt(0).toUpperCase() + color.slice(1);
+  } else {
+    cp.style.display = 'none';
+  }
+
+  // Update swatch selected state
+  document.querySelectorAll('.csw').forEach(el => {
+    el.classList.toggle('sel', el.getAttribute('data-c') === (color || ''));
+  });
+}
+
+/* ===================== CRUD ===================== */
+function createNote(){
+  const now = Date.now();
+  const n = {id:now, title:'', body:'', tag:null, color:'', created:now, modified:now};
+  notes.unshift(n); saveToDisk(); renderList(); openNote(n.id);
+  setTimeout(() => document.getElementById('note-title').focus(), 60);
+}
+
+function deleteNote(id, e){
   e.stopPropagation();
-  notes=notes.filter(n=>n.id!==id);delete UH[id];saveToDisk();
-  if(activeId===id){activeId=null;showEmpty();}
+  notes = notes.filter(n => n.id !== id);
+  delete UH[id]; saveToDisk();
+  if(activeId === id){ activeId = null; showEmpty(); }
   renderList();
 }
 
 function openNote(id){
-  const note=notes.find(n=>n.id===id);if(!note)return;
-  activeId=id;
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('toolbar').style.display='flex';
-  document.getElementById('editor-wrap').style.display='flex';
-  document.getElementById('note-title').value=note.title;
-  const body=document.getElementById('note-body');
-  body.innerHTML=note.body||'';
-  seedH(id,note.body||'');
-  const d=new Date(note.modified);
-  document.getElementById('e-date').textContent=
-    d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+
-    ' � '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  updPill(note.tag);updStats();hlActive(id);updUB();updFmt();
-  document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('sel'));
-  if(note.tag)document.getElementById('tag-'+note.tag)?.classList.add('sel');
+  const note = notes.find(n => n.id === id);
+  if(!note) return;
+  activeId = id;
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('toolbar').style.display = 'flex';
+  document.getElementById('editor-wrap').style.display = 'flex';
+  document.getElementById('note-title').value = note.title;
+  const body = document.getElementById('note-body');
+  body.innerHTML = note.body || '';
+  seedH(id, note.body || '');
+  const d = new Date(note.modified);
+  document.getElementById('e-date').textContent =
+    d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
+    ' · ' + d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  updPill(note.tag);
+  applyNoteColor(note.color || '');
+  updStats(); hlActive(id); updUB(); updFmt();
+  document.querySelectorAll('.tpill').forEach(p => p.classList.remove('sel'));
+  if(note.tag) document.getElementById('tag-'+note.tag)?.classList.add('sel');
 }
 
 function showEmpty(){
-  document.getElementById('empty-state').style.display='flex';
-  document.getElementById('toolbar').style.display='none';
-  document.getElementById('editor-wrap').style.display='none';
+  document.getElementById('empty-state').style.display = 'flex';
+  document.getElementById('toolbar').style.display = 'none';
+  document.getElementById('editor-wrap').style.display = 'none';
   updUB();
 }
 
 function onTitleInput(){
-  const note=notes.find(n=>n.id===activeId);if(!note)return;
-  note.title=document.getElementById('note-title').value;
-  note.modified=Date.now();saveToDisk();renderList(true);
+  const note = notes.find(n => n.id === activeId); if(!note) return;
+  note.title = document.getElementById('note-title').value;
+  note.modified = Date.now(); saveToDisk(); renderList(true);
 }
 
 function onBodyInput(){
-  const el=document.getElementById('note-body');
-  const note=notes.find(n=>n.id===activeId);if(!note)return;
-  note.body=el.innerHTML;note.modified=Date.now();
-  updStats();saveToDisk();renderList(true);schedH();
+  const el = document.getElementById('note-body');
+  const note = notes.find(n => n.id === activeId); if(!note) return;
+  note.body = el.innerHTML; note.modified = Date.now();
+  updStats(); saveToDisk(); renderList(true); schedH();
 }
 
 function updStats(){
-  const el=document.getElementById('note-body');
-  const txt=el.innerText||'';
-  const w=txt.trim()?txt.trim().split(/\s+/).length:0;
-  const rm=Math.ceil(w/200);
-  document.getElementById('sw').textContent=w;
-  document.getElementById('sc').textContent=txt.length;
-  document.getElementById('sl').textContent=txt?txt.split('\n').length:1;
-  document.getElementById('sr').textContent=rm<1?'<1 min':rm+' min';
+  const el = document.getElementById('note-body');
+  const txt = el.innerText || '';
+  const w = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+  const rm = Math.ceil(w/200);
+  document.getElementById('sw').textContent = w;
+  document.getElementById('sc').textContent = txt.length;
+  document.getElementById('sl').textContent = txt ? txt.split('\n').length : 1;
+  document.getElementById('sr').textContent = rm < 1 ? '<1 min' : rm + ' min';
 }
 
 function setTag(tag){
-  const note=notes.find(n=>n.id===activeId);if(!note)return;
-  note.tag=note.tag===tag?null:tag;note.modified=Date.now();saveToDisk();
+  const note = notes.find(n => n.id === activeId); if(!note) return;
+  note.tag = note.tag === tag ? null : tag;
+  note.modified = Date.now(); saveToDisk();
   updPill(note.tag);
-  document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('sel'));
-  if(note.tag)document.getElementById('tag-'+note.tag)?.classList.add('sel');
+  document.querySelectorAll('.tpill').forEach(p => p.classList.remove('sel'));
+  if(note.tag) document.getElementById('tag-'+note.tag)?.classList.add('sel');
   renderList(true);
 }
 
 function updPill(tag){
-  const el=document.getElementById('apill');
-  if(!tag){el.style.display='none';return;}
-  const L={purple:'Ideas',blue:'Work',green:'Personal'};
-  const C={purple:'tp',blue:'tb',green:'tg'};
-  el.style.display='inline-block';el.className='ntag '+(C[tag]||'');el.textContent=L[tag]||tag;
+  const el = document.getElementById('apill');
+  if(!tag){ el.style.display='none'; return; }
+  const L = {purple:'Ideas', blue:'Work', green:'Personal'};
+  const C = {purple:'tp', blue:'tb', green:'tg'};
+  el.style.display = 'inline-block';
+  el.className = 'ntag ' + (C[tag]||'');
+  el.textContent = L[tag] || tag;
 }
 
 function hlActive(id){
-  document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',+el.dataset.id===id));
+  document.querySelectorAll('.ni').forEach(el => el.classList.toggle('active', +el.dataset.id === id));
 }
+
+const colorBarMap = {
+  rose:'#e05050', amber:'#e08c3c', lime:'#64b43c', sky:'#3c8cc8', violet:'#8c50c8', pink:'#c850a0'
+};
 
 function renderList(keep=false){
-  const q=(document.getElementById('search-box')?.value||'').toLowerCase();
-  const list=document.getElementById('notes-list');
-  const st=list.scrollTop;
-  const fi=notes.filter(n=>!q||(n.title||'').toLowerCase().includes(q)||strip(n.body||'').toLowerCase().includes(q));
-  list.innerHTML='';
-  if(!fi.length){list.innerHTML='<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">No notes found</div>';return;}
-  const L={purple:'Ideas',blue:'Work',green:'Personal'},C={purple:'tp',blue:'tb',green:'tg'};
-  fi.forEach(note=>{
-    const div=document.createElement('div');
-    div.className='ni'+(note.id===activeId?' active':'');
-    div.dataset.id=note.id;div.onclick=()=>openNote(note.id);
-    const d=new Date(note.modified);
-    const ts=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const prev=strip(note.body||'').replace(/\n/g,' ').substring(0,54)||'No content�';
-    const th=note.tag?`<span class="ntag ${C[note.tag]||''}">${L[note.tag]||note.tag}</span>`:'';
-    div.innerHTML=`<div class="ni-t">${esc(note.title||'Untitled')}</div>
+  const q = (document.getElementById('search-box')?.value || '').toLowerCase();
+  const list = document.getElementById('notes-list');
+  const st = list.scrollTop;
+  const fi = notes.filter(n => !q || (n.title||'').toLowerCase().includes(q) || strip(n.body||'').toLowerCase().includes(q));
+  list.innerHTML = '';
+  if(!fi.length){
+    list.innerHTML = '<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">No notes found</div>';
+    return;
+  }
+  const L = {purple:'Ideas', blue:'Work', green:'Personal'};
+  const C = {purple:'tp', blue:'tb', green:'tg'};
+  fi.forEach(note => {
+    const div = document.createElement('div');
+    div.className = 'ni' + (note.id === activeId ? ' active' : '');
+    div.dataset.id = note.id;
+    if(note.color) div.setAttribute('data-color', note.color);
+    div.onclick = () => openNote(note.id);
+    const d = new Date(note.modified);
+    const ts = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const prev = strip(note.body||'').replace(/\n/g,' ').substring(0,54) || 'No content…';
+    const th = note.tag ? `<span class="ntag ${C[note.tag]||''}">${L[note.tag]||note.tag}</span>` : '';
+    const colorDot = note.color ? `<span style="width:8px;height:8px;border-radius:50%;background:${colorBarMap[note.color]};display:inline-block;flex-shrink:0"></span>` : '';
+    div.innerHTML = `<div class="ni-t">${esc(note.title||'Untitled')}</div>
       <div class="ni-p">${esc(prev)}</div>
-      <div class="ni-m">${th}<span class="ni-ts">${ts}</span></div>
-      <button class="delbtn" onclick="deleteNote(${note.id},event)">�</button>`;
+      <div class="ni-m">${colorDot}${th}<span class="ni-ts">${ts}</span></div>
+      <button class="delbtn" onclick="deleteNote(${note.id},event)">✕</button>`;
     list.appendChild(div);
   });
-  if(keep)list.scrollTop=st;
+  if(keep) list.scrollTop = st;
 }
 
-function strip(h){return h.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function strip(h){ return h.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim(); }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* ---------------------- MAXIMIZE / MINIMIZE ---------------------- */
+/* ===================== WINDOW ===================== */
 function toggleMax(){
   document.getElementById('app').classList.add('maximized');
-  document.getElementById('btn-max').style.display='none';
-  document.getElementById('btn-min').style.display='flex';
+  document.getElementById('btn-max').style.display = 'none';
+  document.getElementById('btn-min').style.display = 'flex';
 }
 function toggleMin(){
   document.getElementById('app').classList.remove('maximized');
-  document.getElementById('btn-max').style.display='flex';
-  document.getElementById('btn-min').style.display='none';
-}
-/* ═════════════ THEME TOGGLE ═════════════ */
-function toggleTheme(){
-  document.body.classList.toggle('light');
-  const isLight = document.body.classList.contains('light');
-
-  localStorage.setItem('ln_theme', isLight ? 'light' : 'dark');
-
-  document.getElementById('themeBtn').textContent =
-    isLight ? '☀ Light' : '🌙 Dark';
-}
-
-/* Load Saved Theme */
-(function(){
-  const savedTheme = localStorage.getItem('ln_theme');
-  if(savedTheme === 'light'){
-    document.body.classList.add('light');
-    document.getElementById('themeBtn').textContent = '☀ Light';
-  }
-})();
-function handleGoogleLogin(response) {
-  const data = parseJwt(response.credential);
-
-  const googleUser = {
-    id: 'g_' + Date.now(),
-    username: data.email,
-    name: data.name,
-    email: data.email,
-    password: null   // not needed for Google users
-  };
-
-  // Save Google user if not already saved
-  if (!USERS.find(u => u.email === googleUser.email)) {
-    USERS.push(googleUser);
-    localStorage.setItem('ln_users', JSON.stringify(USERS));
-  }
-
-  loginUser(googleUser);   // ✅ This opens dashboard properly
-}
-
-function parseJwt(token) {
-  var base64Url = token.split('.')[1];
-  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-
-  return JSON.parse(jsonPayload);
+  document.getElementById('btn-max').style.display = 'flex';
+  document.getElementById('btn-min').style.display = 'none';
 }
 </script>
 </body>
 </html>
-
-
-
-Add Code in 
