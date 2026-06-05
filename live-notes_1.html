@@ -193,7 +193,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   display:flex;align-items:center;justify-content:center;transition:all .15s;
 }
 .win-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--borderh)}
-
+/* editor */
 /* editor */
 #editor-wrap{flex:1;display:none;flex-direction:column;overflow:hidden}
 #ea{flex:1;overflow-y:auto;padding:34px 52px}
@@ -281,6 +281,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <div id="topnav">
     <div class="nav-logo">LiveNotes</div>
     <div class="live-dot" style="margin-left:3px"></div>
+    <button class="side-toggle" id="side-toggle" title="Show / hide notes panel" onclick="toggleSidebar()">☰</button>
     <div class="nspc"></div>
     <div class="nav-user">
       <div class="nav-avatar" id="nav-av">?</div>
@@ -313,6 +314,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         <button class="tb-btn" id="fmt-italic"    title="Italic (Ctrl+I)"    onclick="rf('italic')"   ><i style="font-style:italic">I</i></button>
         <button class="tb-btn" id="fmt-underline" title="Underline (Ctrl+U)" onclick="rf('underline')"><u>U</u></button>
         <div class="tsep"></div>
+        <select class="font-select" id="font-select" title="Font style" onchange="setFontStyle(this.value)">
+  <option value="'DM Sans', sans-serif">DM Sans</option>
+  <option value="Georgia, serif">Georgia</option>
+  <option value="'Poppins', sans-serif">Poppins</option>
+  <option value="'Lora', serif">Lora</option>
+  <option value="'Merriweather', serif">Merriweather</option>
+  <option value="'DM Mono', monospace">DM Mono</option>
+</select>
+<div class="tsep"></div>
 
         <!-- Inserts -->
         <button class="tb-btn" title="Bullet list (ul)"   onclick="ri('ul')">•≡</button>
@@ -538,7 +548,7 @@ document.addEventListener('keydown',e=>{
 /* ══════════════════════ NOTE CRUD ══════════════════════ */
 function createNote(){
   const now=Date.now();
-  const n={id:now,title:'',body:'',tag:null,created:now,modified:now};
+  const n={id:now,title:'',body:'',tag:null,font:"'DM Sans', sans-serif",created:now,modified:now};
   notes.unshift(n);saveToDisk();renderList();openNote(n.id);
   setTimeout(()=>document.getElementById('note-title').focus(),60);
 }
@@ -559,6 +569,8 @@ function openNote(id){
   document.getElementById('note-title').value=note.title;
   const body=document.getElementById('note-body');
   body.innerHTML=note.body||'';
+  body.style.fontFamily=note.font || "'DM Sans', sans-serif";
+document.getElementById('font-select').value = note.font || "'DM Sans', sans-serif";
   seedH(id,note.body||'');
   const d=new Date(note.modified);
   document.getElementById('e-date').textContent=
@@ -660,6 +672,24 @@ function toggleMin(){
   document.getElementById('btn-max').style.display='flex';
   document.getElementById('btn-min').style.display='none';
 }
-</script>
+function setFontStyle(font){
+  const body=document.getElementById('note-body');
+  body.style.fontFamily=font;
+
+  const note=notes.find(n=>n.id===activeId);
+  if(!note)return;
+
+  note.font=font;
+  note.modified=Date.now();
+  saveToDisk();
+}
+
+function toggleSidebar(){
+  const app=document.getElementById('app');
+  app.classList.toggle('sidebar-closed');
+
+  const btn=document.getElementById('side-toggle');
+  btn.textContent=app.classList.contains('sidebar-closed')?'☰':'×';
+}</script>
 </body>
 </html>
